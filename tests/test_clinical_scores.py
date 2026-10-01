@@ -17,4 +17,3 @@ def test_qsofa_does_not_treat_missing_as_normal() -> None:
     assert result.total == 0
     assert result.respiratory is None
     assert result.altered_mental_status is None
-

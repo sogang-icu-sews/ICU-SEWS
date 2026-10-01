@@ -61,4 +61,3 @@ def _assert_disjoint(split: PatientSplit) -> None:
     test_ids = set(split.test_ids)
     if train_ids & validation_ids or train_ids & test_ids or validation_ids & test_ids:
         raise AssertionError("A patient appears in more than one split")
-

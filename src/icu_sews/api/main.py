@@ -1,7 +1,7 @@
 """FastAPI application entry point. Owner: 김진호."""
 
-from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 
@@ -42,4 +42,3 @@ def predict(payload: PredictionRequest, request: Request) -> PredictionResponse:
         return predictor.predict(payload)
     except RuntimeError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
-

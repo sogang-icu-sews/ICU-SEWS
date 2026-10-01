@@ -32,4 +32,3 @@ class GruSepsisModel(nn.Module):
         """Compute logits for a batch shaped ``[batch, time, features]``."""
         _, hidden = self.gru(sequence)
         return self.classifier(hidden[-1]).squeeze(-1)
-

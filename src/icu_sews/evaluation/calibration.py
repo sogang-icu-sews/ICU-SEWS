@@ -21,4 +21,3 @@ class PlattCalibrator:
     def transform(self, probabilities: np.ndarray) -> np.ndarray:
         """Return calibrated positive-class probabilities."""
         return self.model.predict_proba(probabilities.reshape(-1, 1))[:, 1]
-

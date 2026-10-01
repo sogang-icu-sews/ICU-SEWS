@@ -18,4 +18,3 @@ def soft_vote(
     if tree_probability.shape != sequence_probability.shape:
         raise ValueError("Ensemble inputs must have identical shapes")
     return tree_weight * tree_probability + (1.0 - tree_weight) * sequence_probability
-

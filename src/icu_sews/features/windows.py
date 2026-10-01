@@ -31,4 +31,3 @@ def create_rolling_statistics(
         result = pd.concat([result, values], axis=1)
 
     return result
-

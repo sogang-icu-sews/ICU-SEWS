@@ -36,4 +36,3 @@ def calculate_qsofa(
         systolic_blood_pressure=pressure,
         altered_mental_status=mental_status,
     )
-

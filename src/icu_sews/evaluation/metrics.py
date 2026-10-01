@@ -56,4 +56,3 @@ def expected_calibration_error(
             confidence = probabilities[included].mean()
             error += included.mean() * abs(accuracy - confidence)
     return float(error)
-

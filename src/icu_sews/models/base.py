@@ -25,4 +25,3 @@ class ProbabilityModel(Protocol):
     def predict_probability(self, features: np.ndarray) -> np.ndarray:
         """Return a one-dimensional probability array."""
         ...
-

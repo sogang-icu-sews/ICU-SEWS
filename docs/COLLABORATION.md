@@ -46,4 +46,3 @@ docs: update model handoff contract
 - 테스트 또는 수동 검증 절차가 있다.
 - 담당 문서와 파일 가이드가 갱신되어 있다.
 - 다른 팀원의 환경에서 실행할 수 있다.
-

@@ -10,4 +10,3 @@ def test_soft_vote_uses_configured_weight() -> None:
     sequence = np.array([0.4, 0.6])
     result = soft_vote(tree, sequence, tree_weight=0.75)
     np.testing.assert_allclose(result, np.array([0.7, 0.3]))
-

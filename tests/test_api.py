@@ -24,4 +24,3 @@ def test_health_and_predict() -> None:
         )
         assert response.status_code == 200
         assert response.json()["is_mock"] is True
-

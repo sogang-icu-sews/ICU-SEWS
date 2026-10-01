@@ -29,4 +29,3 @@ class XGBoostSepsisModel:
         """Persist the fitted wrapper."""
         path.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(self, path)
-

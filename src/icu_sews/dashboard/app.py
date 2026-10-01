@@ -54,4 +54,3 @@ if st.button("위험도 요청", type="primary"):
         st.warning("Warning")
     else:
         st.success("Normal")
-

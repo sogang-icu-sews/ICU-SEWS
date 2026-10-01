@@ -57,4 +57,3 @@ class HealthResponse(BaseModel):
     status: str
     model_loaded: bool
     mock_mode: bool
-

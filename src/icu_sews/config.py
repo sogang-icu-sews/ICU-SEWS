@@ -25,4 +25,3 @@ def load_yaml_config(name: str) -> dict[str, Any]:
     if not isinstance(config, dict):
         raise ValueError(f"Configuration must be a mapping: {config_path}")
     return config
-

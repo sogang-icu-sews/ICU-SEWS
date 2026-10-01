@@ -25,4 +25,3 @@ label:
   column: SepsisLabel
   source: official_physionet_challenge_2019
   apply_additional_shift: false
-

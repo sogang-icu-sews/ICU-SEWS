@@ -76,4 +76,3 @@ def build_patient_summary(records: pd.DataFrame) -> pd.DataFrame:
         .sort_values("patient_id")
         .reset_index(drop=True)
     )
-

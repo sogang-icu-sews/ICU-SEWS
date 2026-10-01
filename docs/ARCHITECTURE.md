@@ -46,4 +46,3 @@ artifacts/model_metadata.json
 ```
 
 파일명은 초기 계약이며 구현 과정에서 변경할 수 있다. 변경 시 `docs/FILE_GUIDE.md`, API 계약, 관련 설정을 같은 Pull Request에서 갱신한다.
-

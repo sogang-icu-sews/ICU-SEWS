@@ -13,4 +13,3 @@ def test_load_patient_adds_source_prefixed_id(tmp_path: Path) -> None:
 
     assert result["patient_id"].unique().tolist() == ["A_p000001"]
     assert result["ICULOS"].tolist() == [1, 2]
-

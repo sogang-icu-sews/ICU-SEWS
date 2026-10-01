@@ -25,4 +25,3 @@ def predict(payload: dict[str, Any]) -> dict[str, Any]:
     response = httpx.post(f"{API_URL}/predict", json=payload, timeout=10.0)
     response.raise_for_status()
     return response.json()
-

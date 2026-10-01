@@ -47,4 +47,3 @@ class PredictorService:
                 FeatureContribution(feature="SBP_demo", shap_value=0.0),
             ],
         )
-

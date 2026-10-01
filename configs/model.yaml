@@ -37,4 +37,3 @@ cross_validation:
   type: stratified_group_k_fold
   n_splits: 5
   random_seed: 42
-

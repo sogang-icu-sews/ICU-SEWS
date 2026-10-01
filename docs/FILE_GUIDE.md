@@ -68,4 +68,3 @@
 | `docs/ARCHITECTURE.md` | 모듈 경계와 누수 방지 원칙 | 최종 Mermaid 다이어그램 | 전원 |
 | `docs/API_CONTRACT.md` | 요청·응답 초안 | 백엔드/프론트 확정 계약 | 김진호·임경수 |
 | `docs/COLLABORATION.md` | 브랜치·리뷰·커밋 규칙 | 팀 합의 사항 반영 | 전원 |
-
