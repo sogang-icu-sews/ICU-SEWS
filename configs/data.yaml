@@ -1,0 +1,28 @@
+# Owner: 정상민
+# Purpose: 데이터 경로, 분할, 관찰 창을 코드와 분리한다.
+data:
+  raw_dir: data/raw
+  interim_dir: data/interim
+  processed_dir: data/processed
+  sources:
+    A: training_setA
+    B: training_setB
+
+split:
+  train_ratio: 0.70
+  validation_ratio: 0.15
+  test_ratio: 0.15
+  random_seed: 42
+  group_column: patient_id
+  stratify_column: is_sepsis
+
+window:
+  observation_hours: 24
+  prediction_horizon_hours: 6
+  step_hours: 1
+
+label:
+  column: SepsisLabel
+  source: official_physionet_challenge_2019
+  apply_additional_shift: false
+

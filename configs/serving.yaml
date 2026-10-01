@@ -1,0 +1,20 @@
+# Owners: 김진호, 임경수
+# Purpose: API 입력 조건과 서비스 표시 정책을 공유한다.
+api:
+  title: ICU Sepsis Early Warning System API
+  version: 0.1.0
+  observation_hours: 24
+  model_directory: artifacts
+
+latency_test:
+  warmup_requests: 10
+  measured_requests: 100
+  batch_size: 1
+  target_mean_ms: 200
+
+dashboard:
+  refresh_seconds: 30
+  normal_color: "#22c55e"
+  warning_color: "#eab308"
+  alert_color: "#ef4444"
+

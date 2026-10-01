@@ -1,0 +1,40 @@
+# Owner: 이택훈
+# Purpose: 모델 종류, 학습, 앙상블, 경보 임계값의 초기 기본값을 관리한다.
+baseline:
+  type: logistic_regression
+
+tree_model:
+  type: xgboost
+  n_estimators: 300
+  max_depth: 5
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+
+sequence_model:
+  type: gru
+  hidden_size: 64
+  num_layers: 2
+  dropout: 0.2
+  batch_size: 128
+  learning_rate: 0.001
+  max_epochs: 50
+
+ensemble:
+  type: soft_voting
+  tree_weight: 0.6
+  sequence_weight: 0.4
+
+calibration:
+  method: platt
+
+alerts:
+  # 임시값이다. 최종값은 Validation 데이터의 Utility/Recall/PPV 분석으로 결정한다.
+  warning_threshold: 0.50
+  alert_threshold: 0.75
+
+cross_validation:
+  type: stratified_group_k_fold
+  n_splits: 5
+  random_seed: 42
+
