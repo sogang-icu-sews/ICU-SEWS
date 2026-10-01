@@ -9,7 +9,6 @@ from typing import Any
 
 import httpx
 
-
 API_URL = os.getenv("SEWS_API_URL", "http://localhost:8000")
 
 

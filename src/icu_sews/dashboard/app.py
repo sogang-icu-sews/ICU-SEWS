@@ -9,7 +9,6 @@ import streamlit as st
 
 from icu_sews.dashboard.api_client import get_health, predict
 
-
 st.set_page_config(page_title="ICU SEWS", page_icon="🏥", layout="wide")
 st.title("ICU 패혈증 조기 경보 시스템")
 st.caption("교육·연구용 프로토타입 — 실제 임상 의사결정에 사용할 수 없습니다.")

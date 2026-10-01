@@ -8,7 +8,6 @@ from collections.abc import Sequence
 
 import pandas as pd
 
-
 DEFAULT_STATISTICS = ("mean", "std", "min", "max", "median")
 
 
@@ -27,7 +26,9 @@ def create_rolling_statistics(
 
     for statistic in DEFAULT_STATISTICS:
         values = getattr(rolling, statistic)()
-        values.columns = [f"{column}__{statistic}__{observation_hours}h" for column in value_columns]
+        values.columns = [
+            f"{column}__{statistic}__{observation_hours}h" for column in value_columns
+        ]
         result = pd.concat([result, values], axis=1)
 
     return result

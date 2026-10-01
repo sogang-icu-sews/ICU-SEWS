@@ -25,9 +25,7 @@ def calculate_qsofa(
 ) -> QsofaResult:
     """Calculate qSOFA without silently treating missing values as normal."""
     respiratory = None if respiratory_rate is None else int(respiratory_rate >= 22)
-    pressure = (
-        None if systolic_blood_pressure is None else int(systolic_blood_pressure <= 100)
-    )
+    pressure = None if systolic_blood_pressure is None else int(systolic_blood_pressure <= 100)
     mental_status = None if altered_mental_status is None else int(altered_mental_status)
     observed = [value for value in (respiratory, pressure, mental_status) if value is not None]
     return QsofaResult(
