@@ -111,7 +111,8 @@ docs/                    설계·API·파일별 작업 문서
 설치·실행·평가 규칙은 [`docs/LOGISTIC_BASELINE.md`](docs/LOGISTIC_BASELINE.md)를 참고합니다.
 
 ```powershell
-.venv\Scripts\python.exe -m pip install -r requirements-baseline.txt
+.venv\Scripts\python.exe --version  # Python 3.10.13
+.venv\Scripts\python.exe -m pip install -r requirements-baseline-lock.txt
 .venv\Scripts\python.exe scripts/train_logistic.py
 ```
 

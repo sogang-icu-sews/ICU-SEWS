@@ -10,14 +10,27 @@
 저장소 루트 `C:\ICU_SEWS`에서 PowerShell로 실행한다.
 
 ```powershell
-.venv\Scripts\python.exe -m pip install -r requirements-baseline.txt
+.venv\Scripts\python.exe --version  # Python 3.10.13
+.venv\Scripts\python.exe -m pip install -r requirements-baseline-lock.txt
 .venv\Scripts\python.exe scripts/train_logistic.py
 ```
 
-최초 실행 환경은 기존 `.venv`의 Python 3.12다. 팀의 `pyproject.toml`과
-`.python-version`은 Python 3.10 기준으로 유지한다. 이 실행기는 전체 앱을 설치하지
-않고 `src`를 직접 읽는다. Python 3.10 팀 환경에서는 같은 최소 의존성 파일로
-호환 버전을 설치하고 다시 검증해야 한다. 실행별 실제 버전은 metadata.json에 남긴다.
+프로젝트 기준 Python 3.10.13을 사용한다. `scripts/train_logistic.py`는 다른 버전이면
+학습 전에 중단한다. 이 실행기는 전체 앱을 설치하지 않고 `src`를 직접 읽는다.
+`requirements-baseline.txt`는 최소 의존성 범위이고, `requirements-baseline-lock.txt`는
+Windows/Python 3.10.13에서 재현하기 위한 의존성 버전 목록이다.
+실행별 실제 Python·패키지 버전은 metadata.json에 남긴다.
+
+새 환경을 만들 때는 uv로 다음과 같이 구성한다.
+
+```powershell
+uv python install 3.10.13
+uv venv --python 3.10.13 --seed .venv
+.venv\Scripts\python.exe -m pip install -r requirements-baseline-lock.txt
+```
+
+이전 Python 3.12 실행은 환경 설정 오류에 따른 참고 기록이며 공식 기준선으로 사용하지
+않는다. Python 3.10.13에서 기존 환자 분할을 그대로 재사용해 재검증했다.
 
 경로나 변수·하이퍼파라미터를 바꾸려면 다음 설정을 사용한다.
 
@@ -81,3 +94,29 @@ data/raw/training_setB/training_setB/*.psv
 
 테스트는 전처리 통계의 Train 한정 학습, 공통 분할 재사용과 불일치 거부,
 잘못된 라벨·중복 시간 거부, 모델 저장·검증 예측의 환자 범위를 확인한다.
+
+## Python 3.10.13 재검증 결과 — 2026-10-07
+
+- 실행 ID: `logistic_20261007T123820357976Z`
+- 환경: Python 3.10.13, NumPy 2.2.6, pandas 2.3.3, scikit-learn 1.7.2.
+- 원본 파일 40,336개를 읽었다. 이전 실행과 원본 내용 해시 및 환자 분할 해시가 일치한다.
+- Train: 환자 28,235명 / 시간 행 1,086,436개.
+- Validation: 환자 6,050명 / 시간 행 231,472개.
+- Test: 환자 6,051명 / 시간 행 234,302개. 성능은 평가하지 않았다.
+
+| Validation 지표 | 값 |
+|---|---:|
+| AUROC | 0.628387 |
+| AUPRC (AP) | 0.032238 |
+| 양성 시간 행 비율 | 0.017981 |
+| Brier Score | 0.017578 |
+| Recall @ 0.5 | 0.000000 |
+
+0.5 임계값에서 양성 예측은 0건이다. 이 값은 경보용으로 선택된 임계값이 아니며,
+현재 결과는 후속 특징 공학·불균형 처리·임계값 검증을 위한 단순 비교 기준선이다.
+3.12 실행과 AUROC/AP는 동일했고, Brier/ECE 차이는 부동소수점 정밀도 수준이었다.
+
+모델 저장·재로딩 일치 검증, 전체 Pytest 10개, 전체 Ruff 검사와 포맷 검사,
+의존성 일관성 검사 및 고정 의존성 파일의 설치 확인을 통과했다.
+API 테스트에서 외부 라이브러리의 Starlette/httpx 사용 중단 예정 경고 1개가 있었으며
+테스트 실패는 없었다. 전체 앱의 모든 선택 기능을 설치·검증한 것은 아니다.
