@@ -5,8 +5,8 @@ data:
   interim_dir: data/interim
   processed_dir: data/processed
   sources:
-    A: training_setA
-    B: training_setB
+    A: training_setA/training
+    B: training_setB/training_setB
 
 split:
   train_ratio: 0.70

@@ -1,0 +1,7 @@
+# Minimal standalone baseline environment; full application uses pyproject.toml.
+numpy>=1.26,<3.0
+pandas>=2.2,<3.0
+scikit-learn>=1.5,<2.0
+pyarrow>=17,<22
+pyyaml>=6.0,<7.0
+joblib>=1.4,<2.0

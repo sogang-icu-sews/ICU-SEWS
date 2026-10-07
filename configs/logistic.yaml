@@ -1,0 +1,9 @@
+# Owner: 이택훈. Current-hour baseline; no label shift or rolling features.
+features: [HR, O2Sat, Temp, SBP, DBP, MAP, Resp, Age]
+model:
+  C: 1.0
+  max_iter: 1000
+  solver: lbfgs
+  class_weight: null
+  random_state: 42
+threshold: 0.5  # Diagnostic only, not a selected clinical alert threshold.

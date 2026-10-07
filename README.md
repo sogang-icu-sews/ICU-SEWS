@@ -107,4 +107,13 @@ docs/                    설계·API·파일별 작업 문서
 
 ## 현재 상태
 
-현재 커밋은 팀 개발을 시작하기 위한 프로젝트 뼈대입니다. Mock 예측 경로만 제공하며 실제 데이터 학습, 모델 파일, 임상 검증은 아직 완료되지 않았습니다.
+원본 PSV로 로지스틱 회귀 기준선을 학습하는 실행기를 제공합니다.
+설치·실행·평가 규칙은 [`docs/LOGISTIC_BASELINE.md`](docs/LOGISTIC_BASELINE.md)를 참고합니다.
+
+```powershell
+.venv\Scripts\python.exe -m pip install -r requirements-baseline.txt
+.venv\Scripts\python.exe scripts/train_logistic.py
+```
+
+API는 아직 Mock 예측 경로를 사용합니다. 기준선은 별도 학습 산출물이며 API 연결,
+XGBoost/GRU 학습과 임상 검증은 완료되지 않았습니다.
