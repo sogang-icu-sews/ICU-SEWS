@@ -38,6 +38,15 @@
 
 ## 모델·평가 파일
 
+로지스틱 회귀 기준선 추가 파일(담당: 이택훈):
+
+- `src/icu_sews/models/logistic.py`: 중앙값 대치·표준화·로지스틱 회귀 Pipeline.
+- `src/icu_sews/models/train_logistic.py`: 원본 검증, 공통 환자 분할 저장·재사용, 학습·평가·저장.
+- `scripts/train_logistic.py`: 저장소 루트에서 실행하는 진입점.
+- `configs/logistic.yaml`, `requirements-baseline.txt`: 기준선 설정·최소 의존성.
+- `tests/test_logistic.py`: 누수 방지, 분할, 입력 검증, 학습 통합 테스트.
+- `docs/LOGISTIC_BASELINE.md`: 실행법, 산출물, 평가 범위와 환경 제약.
+
 | 파일 | 초기 작성 내용 | 다음 작업 | 담당 |
 |---|---|---|---|
 | `models/base.py` | 모델과 API 사이 예측 계약 | 모델 메타데이터·설명 계약 확장 | 이택훈·김진호 |
