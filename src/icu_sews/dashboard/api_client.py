@@ -13,7 +13,12 @@ HEALTH_TIMEOUT = 5.0
 PREDICT_TIMEOUT = 10.0
 
 
-def _request_json(method: str, path: str, *, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+def _request_json(
+    method: str,
+    path: str,
+    *,
+    payload: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Request JSON with bounded retries for transient connection/server failures."""
     timeout = HEALTH_TIMEOUT if path == "/health" else PREDICT_TIMEOUT
     last_error: Exception | None = None
