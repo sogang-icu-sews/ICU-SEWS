@@ -39,25 +39,35 @@ else:
 # A small synthetic roster gives the patient-list interaction a usable starting point.
 demo_patients = {
     "DEMO-001": {
-        "label": "합성 환자 001", "resp": 22, "sbp": 105,
-        "hr": 96, "map": 72, "lactate": 1.8,
+        "label": "합성 환자 001",
+        "resp": 22,
+        "sbp": 105,
+        "hr": 96,
+        "map": 72,
+        "lactate": 1.8,
     },
     "DEMO-002": {
-        "label": "합성 환자 002", "resp": 30, "sbp": 88,
-        "hr": 118, "map": 61, "lactate": 3.2,
+        "label": "합성 환자 002",
+        "resp": 30,
+        "sbp": 88,
+        "hr": 118,
+        "map": 61,
+        "lactate": 3.2,
     },
     "DEMO-003": {
-        "label": "합성 환자 003", "resp": 16, "sbp": 124,
-        "hr": 78, "map": 85, "lactate": 1.1,
+        "label": "합성 환자 003",
+        "resp": 16,
+        "sbp": 124,
+        "hr": 78,
+        "map": 85,
+        "lactate": 1.1,
     },
 }
 st.subheader("환자 목록")
 selected_id = st.selectbox(
     "환자 선택",
     options=list(demo_patients),
-    format_func=lambda patient_id: (
-        f"{patient_id} · {demo_patients[patient_id]['label']}"
-    ),
+    format_func=lambda patient_id: f"{patient_id} · {demo_patients[patient_id]['label']}",
 )
 patient = demo_patients[selected_id]
 
