@@ -23,7 +23,7 @@ st.caption(
 
 try:
     health = get_health()
-except Exception as error:  # Show actionable API connection errors in the UI.
+except Exception as error:  # Show actionable API connection errors to the user.
     st.error(f"API에 연결할 수 없습니다: {error}")
     st.info("API 서버 상태와 SEWS_API_URL 설정을 확인한 뒤 페이지를 새로고침하세요.")
     st.stop()
@@ -38,15 +38,26 @@ else:
 
 # A small synthetic roster gives the patient-list interaction a usable starting point.
 demo_patients = {
-    "DEMO-001": {"label": "합성 환자 001", "resp": 22, "sbp": 105, "hr": 96, "map": 72, "lactate": 1.8},
-    "DEMO-002": {"label": "합성 환자 002", "resp": 30, "sbp": 88, "hr": 118, "map": 61, "lactate": 3.2},
-    "DEMO-003": {"label": "합성 환자 003", "resp": 16, "sbp": 124, "hr": 78, "map": 85, "lactate": 1.1},
+    "DEMO-001": {
+        "label": "합성 환자 001", "resp": 22, "sbp": 105,
+        "hr": 96, "map": 72, "lactate": 1.8,
+    },
+    "DEMO-002": {
+        "label": "합성 환자 002", "resp": 30, "sbp": 88,
+        "hr": 118, "map": 61, "lactate": 3.2,
+    },
+    "DEMO-003": {
+        "label": "합성 환자 003", "resp": 16, "sbp": 124,
+        "hr": 78, "map": 85, "lactate": 1.1,
+    },
 }
 st.subheader("환자 목록")
 selected_id = st.selectbox(
     "환자 선택",
     options=list(demo_patients),
-    format_func=lambda patient_id: f"{patient_id} · {demo_patients[patient_id]['label']}",
+    format_func=lambda patient_id: (
+        f"{patient_id} · {demo_patients[patient_id]['label']}"
+    ),
 )
 patient = demo_patients[selected_id]
 
@@ -60,7 +71,13 @@ with middle:
     systolic_pressure = st.slider("수축기혈압 · SBP (mmHg)", 60, 180, patient["sbp"])
     mean_pressure = st.slider("평균동맥압 · MAP (mmHg)", 35, 140, patient["map"])
 with right:
-    lactate = st.slider("젖산 · Lactate (mmol/L)", 0.0, 15.0, float(patient["lactate"]), step=0.1)
+    lactate = st.slider(
+        "젖산 · Lactate (mmol/L)",
+        0.0,
+        15.0,
+        float(patient["lactate"]),
+        step=0.1,
+    )
 
 hours = list(range(1, 25))
 demo_frame = pd.DataFrame(
@@ -137,7 +154,10 @@ if result and result_patient == selected_id:
     if sofa_components:
         st.json(sofa_components)
     else:
-        st.info("현재 API 계약에는 SOFA 구성요소가 포함되어 있지 않습니다. 점수를 추정하거나 결측값을 정상으로 간주하지 않습니다.")
+        st.info(
+            "현재 API 계약에는 SOFA 구성요소가 포함되어 있지 않습니다. "
+            "점수를 추정하거나 결측값을 정상으로 간주하지 않습니다."
+        )
     if qsofa_score is not None:
         st.metric("qSOFA", str(qsofa_score))
     else:
