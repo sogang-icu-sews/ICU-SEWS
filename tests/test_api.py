@@ -25,7 +25,8 @@ def test_health_and_predict() -> None:
         assert response.status_code == 200
         assert response.json()["is_mock"] is True
 
-#Resp에 잘못된 값이 들어갈 경우
+
+# Resp에 잘못된 값이 들어갈 경우
 def test_predict_rejects_invalid_resp() -> None:
     with TestClient(app) as client:
         response = client.post(
@@ -40,7 +41,8 @@ def test_predict_rejects_invalid_resp() -> None:
         errors = response.json()["detail"]
         assert any(error["loc"][-1] == "Resp" for error in errors)
 
-#SBP에 잘못된 값이 들어갈 경우
+
+# SBP에 잘못된 값이 들어갈 경우
 def test_predict_rejects_invalid_sbp() -> None:
     with TestClient(app) as client:
         response = client.post(
