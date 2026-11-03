@@ -23,8 +23,11 @@ class PredictorService:
             raise RuntimeError("Trained model artifacts are not connected")
 
         last = request.observations[-1].model_dump(by_alias=True)
-        respiratory_rate = float(last.get("Resp", 18.0) or 18.0)
-        systolic_pressure = float(last.get("SBP", 120.0) or 120.0)
+        resp_value = last.get("Resp")
+        sbp_value = last.get("SBP")
+
+        respiratory_rate = 18.0 if resp_value is None else float(resp_value)
+        systolic_pressure = 120.0 if sbp_value is None else float(sbp_value)
         risk = min(0.99, max(0.01, 0.15 + max(0.0, respiratory_rate - 20) * 0.03))
         risk += max(0.0, 105 - systolic_pressure) * 0.005
         risk = min(risk, 0.99)
