@@ -1,0 +1,1504 @@
+{
+  "config_version": 4,
+  "module": "src/sews_features.py",
+  "module_sha256": "d2c5f2e83dd3a7c276a876379386e9f2e4ed7afc60c8ed49728125618f7ff18c",
+  "n_model_input": 125,
+  "n_optional": 1,
+  "row_key": "row_id",
+  "features": [
+    {
+      "name": "HR_last",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.32
+    },
+    {
+      "name": "HR_mean",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "mean",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.32
+    },
+    {
+      "name": "HR_median",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "median",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.32
+    },
+    {
+      "name": "HR_std",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "std",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.29
+    },
+    {
+      "name": "HR_min",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "min",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.32
+    },
+    {
+      "name": "HR_max",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "max",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.32
+    },
+    {
+      "name": "HR_iqr",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "iqr",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.29
+    },
+    {
+      "name": "HR_skew",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "skew",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 8.24
+    },
+    {
+      "name": "HR_cv",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "cv",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.29
+    },
+    {
+      "name": "HR_slope",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "slope",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.29
+    },
+    {
+      "name": "HR_delta6h",
+      "group": "vital_window",
+      "source": [
+        "HR"
+      ],
+      "stat": "delta6h",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 17.95
+    },
+    {
+      "name": "Temp_last",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.54
+    },
+    {
+      "name": "Temp_mean",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "mean",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.54
+    },
+    {
+      "name": "Temp_median",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "median",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.54
+    },
+    {
+      "name": "Temp_std",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "std",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 16.5
+    },
+    {
+      "name": "Temp_min",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "min",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.54
+    },
+    {
+      "name": "Temp_max",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "max",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.54
+    },
+    {
+      "name": "Temp_iqr",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "iqr",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 16.5
+    },
+    {
+      "name": "Temp_skew",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "skew",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 25.5
+    },
+    {
+      "name": "Temp_cv",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "cv",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 16.5
+    },
+    {
+      "name": "Temp_slope",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "slope",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 16.5
+    },
+    {
+      "name": "Temp_delta6h",
+      "group": "vital_window",
+      "source": [
+        "Temp"
+      ],
+      "stat": "delta6h",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 23.66
+    },
+    {
+      "name": "Resp_last",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 3.31
+    },
+    {
+      "name": "Resp_mean",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "mean",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 3.31
+    },
+    {
+      "name": "Resp_median",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "median",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 3.31
+    },
+    {
+      "name": "Resp_std",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "std",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 6.65
+    },
+    {
+      "name": "Resp_min",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "min",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 3.31
+    },
+    {
+      "name": "Resp_max",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "max",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 3.31
+    },
+    {
+      "name": "Resp_iqr",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "iqr",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 6.65
+    },
+    {
+      "name": "Resp_skew",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "skew",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 9.9
+    },
+    {
+      "name": "Resp_cv",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "cv",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 6.65
+    },
+    {
+      "name": "Resp_slope",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "slope",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 6.65
+    },
+    {
+      "name": "Resp_delta6h",
+      "group": "vital_window",
+      "source": [
+        "Resp"
+      ],
+      "stat": "delta6h",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 19.07
+    },
+    {
+      "name": "MAP_last",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.83
+    },
+    {
+      "name": "MAP_mean",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "mean",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.83
+    },
+    {
+      "name": "MAP_median",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "median",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.83
+    },
+    {
+      "name": "MAP_std",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "std",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.97
+    },
+    {
+      "name": "MAP_min",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "min",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.83
+    },
+    {
+      "name": "MAP_max",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "max",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.83
+    },
+    {
+      "name": "MAP_iqr",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "iqr",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.97
+    },
+    {
+      "name": "MAP_skew",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "skew",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 9.06
+    },
+    {
+      "name": "MAP_cv",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "cv",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.97
+    },
+    {
+      "name": "MAP_slope",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "slope",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.97
+    },
+    {
+      "name": "MAP_delta6h",
+      "group": "vital_window",
+      "source": [
+        "MAP"
+      ],
+      "stat": "delta6h",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 18.52
+    },
+    {
+      "name": "SBP_last",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 4.2
+    },
+    {
+      "name": "SBP_mean",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "mean",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 4.2
+    },
+    {
+      "name": "SBP_median",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "median",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 4.2
+    },
+    {
+      "name": "SBP_std",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "std",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.28
+    },
+    {
+      "name": "SBP_min",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "min",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 4.2
+    },
+    {
+      "name": "SBP_max",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "max",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 4.2
+    },
+    {
+      "name": "SBP_iqr",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "iqr",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.28
+    },
+    {
+      "name": "SBP_skew",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "skew",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 10.34
+    },
+    {
+      "name": "SBP_cv",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "cv",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.28
+    },
+    {
+      "name": "SBP_slope",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "slope",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.28
+    },
+    {
+      "name": "SBP_delta6h",
+      "group": "vital_window",
+      "source": [
+        "SBP"
+      ],
+      "stat": "delta6h",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 19.79
+    },
+    {
+      "name": "O2Sat_last",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.51
+    },
+    {
+      "name": "O2Sat_mean",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "mean",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.51
+    },
+    {
+      "name": "O2Sat_median",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "median",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.51
+    },
+    {
+      "name": "O2Sat_std",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "std",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.63
+    },
+    {
+      "name": "O2Sat_min",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "min",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.51
+    },
+    {
+      "name": "O2Sat_max",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "max",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.51
+    },
+    {
+      "name": "O2Sat_iqr",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "iqr",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.63
+    },
+    {
+      "name": "O2Sat_skew",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "skew",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 8.75
+    },
+    {
+      "name": "O2Sat_cv",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "cv",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.63
+    },
+    {
+      "name": "O2Sat_slope",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "slope",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 5.63
+    },
+    {
+      "name": "O2Sat_delta6h",
+      "group": "vital_window",
+      "source": [
+        "O2Sat"
+      ],
+      "stat": "delta6h",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 18.19
+    },
+    {
+      "name": "WBC_last",
+      "group": "lab",
+      "source": [
+        "WBC"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 24.24
+    },
+    {
+      "name": "WBC_delta_prev",
+      "group": "lab",
+      "source": [
+        "WBC"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 74.67
+    },
+    {
+      "name": "Platelets_last",
+      "group": "lab",
+      "source": [
+        "Platelets"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 24.09
+    },
+    {
+      "name": "Platelets_delta_prev",
+      "group": "lab",
+      "source": [
+        "Platelets"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 78.57
+    },
+    {
+      "name": "Creatinine_last",
+      "group": "lab",
+      "source": [
+        "Creatinine"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 22.77
+    },
+    {
+      "name": "Creatinine_delta_prev",
+      "group": "lab",
+      "source": [
+        "Creatinine"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 76.37
+    },
+    {
+      "name": "BUN_last",
+      "group": "lab",
+      "source": [
+        "BUN"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 21.88
+    },
+    {
+      "name": "BUN_delta_prev",
+      "group": "lab",
+      "source": [
+        "BUN"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 71.17
+    },
+    {
+      "name": "Bilirubin_total_last",
+      "group": "lab",
+      "source": [
+        "Bilirubin_total"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 76.85
+    },
+    {
+      "name": "Bilirubin_total_delta_prev",
+      "group": "lab",
+      "source": [
+        "Bilirubin_total"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 96.56
+    },
+    {
+      "name": "Lactate_last",
+      "group": "lab",
+      "source": [
+        "Lactate"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 77.1
+    },
+    {
+      "name": "Lactate_delta_prev",
+      "group": "lab",
+      "source": [
+        "Lactate"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 87.87
+    },
+    {
+      "name": "Glucose_last",
+      "group": "lab",
+      "source": [
+        "Glucose"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 15.25
+    },
+    {
+      "name": "Glucose_delta_prev",
+      "group": "lab",
+      "source": [
+        "Glucose"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 44.09
+    },
+    {
+      "name": "Hgb_last",
+      "group": "lab",
+      "source": [
+        "Hgb"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 22.66
+    },
+    {
+      "name": "Hgb_delta_prev",
+      "group": "lab",
+      "source": [
+        "Hgb"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 69.27
+    },
+    {
+      "name": "Potassium_last",
+      "group": "lab",
+      "source": [
+        "Potassium"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 19.34
+    },
+    {
+      "name": "Potassium_delta_prev",
+      "group": "lab",
+      "source": [
+        "Potassium"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 58.2
+    },
+    {
+      "name": "Magnesium_last",
+      "group": "lab",
+      "source": [
+        "Magnesium"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 30.16
+    },
+    {
+      "name": "Magnesium_delta_prev",
+      "group": "lab",
+      "source": [
+        "Magnesium"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 72.68
+    },
+    {
+      "name": "Phosphate_last",
+      "group": "lab",
+      "source": [
+        "Phosphate"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 46.09
+    },
+    {
+      "name": "Phosphate_delta_prev",
+      "group": "lab",
+      "source": [
+        "Phosphate"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 86.56
+    },
+    {
+      "name": "Calcium_last",
+      "group": "lab",
+      "source": [
+        "Calcium"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 31.9
+    },
+    {
+      "name": "Calcium_delta_prev",
+      "group": "lab",
+      "source": [
+        "Calcium"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 81.09
+    },
+    {
+      "name": "AST_last",
+      "group": "lab",
+      "source": [
+        "AST"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 76.57
+    },
+    {
+      "name": "AST_delta_prev",
+      "group": "lab",
+      "source": [
+        "AST"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 95.06
+    },
+    {
+      "name": "Alkalinephos_last",
+      "group": "lab",
+      "source": [
+        "Alkalinephos"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 76.83
+    },
+    {
+      "name": "Alkalinephos_delta_prev",
+      "group": "lab",
+      "source": [
+        "Alkalinephos"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 95.13
+    },
+    {
+      "name": "FiO2_last",
+      "group": "lab",
+      "source": [
+        "FiO2"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 61.79
+    },
+    {
+      "name": "FiO2_delta_prev",
+      "group": "lab",
+      "source": [
+        "FiO2"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 70.72
+    },
+    {
+      "name": "pH_last",
+      "group": "lab",
+      "source": [
+        "pH"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 60.23
+    },
+    {
+      "name": "pH_delta_prev",
+      "group": "lab",
+      "source": [
+        "pH"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 72.73
+    },
+    {
+      "name": "PaCO2_last",
+      "group": "lab",
+      "source": [
+        "PaCO2"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 61.95
+    },
+    {
+      "name": "PaCO2_delta_prev",
+      "group": "lab",
+      "source": [
+        "PaCO2"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 75.45
+    },
+    {
+      "name": "PTT_last",
+      "group": "lab",
+      "source": [
+        "PTT"
+      ],
+      "stat": "last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 62.93
+    },
+    {
+      "name": "PTT_delta_prev",
+      "group": "lab",
+      "source": [
+        "PTT"
+      ],
+      "stat": "delta_prev",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 88.64
+    },
+    {
+      "name": "Temp_dev",
+      "group": "derived",
+      "source": [
+        "Temp"
+      ],
+      "stat": "abs_deviation",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 7.54
+    },
+    {
+      "name": "pH_dev",
+      "group": "derived",
+      "source": [
+        "pH"
+      ],
+      "stat": "abs_deviation",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 60.23
+    },
+    {
+      "name": "PaCO2_dev",
+      "group": "derived",
+      "source": [
+        "PaCO2"
+      ],
+      "stat": "abs_deviation",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 61.95
+    },
+    {
+      "name": "BUN_Creatinine_ratio",
+      "group": "derived",
+      "source": [
+        "BUN",
+        "Creatinine"
+      ],
+      "stat": "ratio_last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 22.85
+    },
+    {
+      "name": "shock_index",
+      "group": "derived",
+      "source": [
+        "HR",
+        "SBP"
+      ],
+      "stat": "ratio_last",
+      "model_input": true,
+      "optional": true,
+      "missing_pct_dev": 4.21
+    },
+    {
+      "name": "meas_lactate_n24h",
+      "group": "measurement",
+      "source": [
+        "Lactate"
+      ],
+      "stat": "n_hours_measured",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "meas_lactate_since_h",
+      "group": "measurement",
+      "source": [
+        "Lactate"
+      ],
+      "stat": "hours_since_last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "meas_fio2_n24h",
+      "group": "measurement",
+      "source": [
+        "FiO2"
+      ],
+      "stat": "n_hours_measured",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "meas_fio2_since_h",
+      "group": "measurement",
+      "source": [
+        "FiO2"
+      ],
+      "stat": "hours_since_last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "meas_liver_panel_n24h",
+      "group": "measurement",
+      "source": [
+        "AST",
+        "Alkalinephos",
+        "Bilirubin_total"
+      ],
+      "stat": "n_hours_measured",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "meas_liver_panel_since_h",
+      "group": "measurement",
+      "source": [
+        "AST",
+        "Alkalinephos",
+        "Bilirubin_total"
+      ],
+      "stat": "hours_since_last",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "sofa_coagulation",
+      "group": "sofa",
+      "source": [
+        "Platelets"
+      ],
+      "stat": "complete",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 24.09
+    },
+    {
+      "name": "sofa_liver",
+      "group": "sofa",
+      "source": [
+        "Bilirubin_total"
+      ],
+      "stat": "complete",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 76.85
+    },
+    {
+      "name": "sofa_renal",
+      "group": "sofa",
+      "source": [
+        "Creatinine"
+      ],
+      "stat": "partial_lower_bound",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 22.77
+    },
+    {
+      "name": "sofa_cardiovascular",
+      "group": "sofa",
+      "source": [
+        "MAP"
+      ],
+      "stat": "partial_0_or_1",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.83
+    },
+    {
+      "name": "sofa_delta",
+      "group": "sofa",
+      "source": [
+        "Platelets",
+        "Bilirubin_total",
+        "Creatinine",
+        "MAP"
+      ],
+      "stat": "per_component_sum",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.56
+    },
+    {
+      "name": "qsofa_resp",
+      "group": "qsofa",
+      "source": [
+        "Resp"
+      ],
+      "stat": "resp_ge",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 3.31
+    },
+    {
+      "name": "qsofa_sbp",
+      "group": "qsofa",
+      "source": [
+        "SBP"
+      ],
+      "stat": "sbp_le",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 4.2
+    },
+    {
+      "name": "qsofa_partial",
+      "group": "qsofa",
+      "source": [
+        "Resp",
+        "SBP"
+      ],
+      "stat": "sum_available",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 2.32
+    },
+    {
+      "name": "Age",
+      "group": "static",
+      "source": [
+        "Age"
+      ],
+      "stat": "value",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "Gender",
+      "group": "static",
+      "source": [
+        "Gender"
+      ],
+      "stat": "value",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "Unit_MICU",
+      "group": "static",
+      "source": [
+        "Unit1",
+        "Unit2"
+      ],
+      "stat": "one_hot",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "Unit_SICU",
+      "group": "static",
+      "source": [
+        "Unit1",
+        "Unit2"
+      ],
+      "stat": "one_hot",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    },
+    {
+      "name": "Unit_Unknown",
+      "group": "static",
+      "source": [
+        "Unit1",
+        "Unit2"
+      ],
+      "stat": "one_hot",
+      "model_input": true,
+      "optional": false,
+      "missing_pct_dev": 0.0
+    }
+  ],
+  "preprocess": {
+    "module": "src/sews_preprocess.py",
+    "module_sha256": "6b51f87c79fef1aaaf25268d192903b4611654e6fc561fe79c873fcd194a1312",
+    "params": {
+      "0": "artifacts/preprocess_params/fold0.json",
+      "1": "artifacts/preprocess_params/fold1.json",
+      "2": "artifacts/preprocess_params/fold2.json",
+      "3": "artifacts/preprocess_params/fold3.json",
+      "4": "artifacts/preprocess_params/fold4.json",
+      "final": "artifacts/preprocess_params/final_dev.json"
+    },
+    "tabular_passthrough": [
+      "Gender",
+      "Unit_MICU",
+      "Unit_SICU",
+      "Unit_Unknown",
+      "qsofa_resp",
+      "qsofa_sbp",
+      "sofa_cardiovascular"
+    ],
+    "clip": 10,
+    "sequence": {
+      "vars": [
+        "HR",
+        "Temp",
+        "Resp",
+        "MAP",
+        "SBP",
+        "O2Sat",
+        "WBC",
+        "Platelets",
+        "Creatinine",
+        "BUN",
+        "Bilirubin_total",
+        "Lactate",
+        "Glucose",
+        "Hgb",
+        "Potassium",
+        "Magnesium",
+        "Phosphate",
+        "Calcium",
+        "AST",
+        "Alkalinephos",
+        "FiO2",
+        "pH",
+        "PaCO2",
+        "PTT"
+      ],
+      "mask_vars": [
+        "HR",
+        "Temp",
+        "Resp",
+        "MAP",
+        "SBP",
+        "O2Sat",
+        "WBC",
+        "Platelets",
+        "Creatinine",
+        "BUN",
+        "Bilirubin_total",
+        "Lactate",
+        "Glucose",
+        "Hgb",
+        "Potassium",
+        "Magnesium",
+        "Phosphate",
+        "Calcium",
+        "AST",
+        "Alkalinephos",
+        "FiO2"
+      ],
+      "n_rows": 1552210,
+      "dtype": "float32",
+      "row_order": "row_id",
+      "window": 24,
+      "files": {
+        "values": "data/seq_values.npy",
+        "row_start": "data/seq_row_start.npy"
+      },
+      "static": [
+        "Age",
+        "Gender",
+        "Unit_MICU",
+        "Unit_SICU",
+        "Unit_Unknown"
+      ]
+    },
+    "usage": {
+      "lightgbm": "features.parquet[model_cols] 그대로 (NaN 포함)",
+      "tabular_nn_lr": "pp.apply_tabular(F, fold_k_params[\"tabular\"], model_cols)",
+      "lstm": "pp.iter_batches(train_rows, bs, np.load(seq_values, mmap_mode=\"r\"), row_start, fold_k_params[\"sequence\"], cfg) + 정적 입력 pp.apply_tabular(F.iloc[rows], fold_k_params[\"tabular\"], static)",
+      "validation_rows": "eval_meta: split == 'dev' & fold == k",
+      "test_rows": "eval_meta: split == 'test' → 최종 평가 1회만, final_dev 파라미터 사용"
+    }
+  }
+}

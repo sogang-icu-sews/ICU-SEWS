@@ -1,0 +1,422 @@
+{
+  "version": 3,
+  "changelog": [
+    "v1: Part 1 (A/B 비교) 결정",
+    "v2: Part 2 결정 추가(시간 지름길, 중복 변수, 측정 패턴, SOFA 규칙, 24h 원칙), excluded_features에서 비컬럼 키 제거 → transforms로 분리",
+    "v3: SOFA 상태 STALE 삭제(24h 창에서는 생길 수 없음), 특징 계산 규칙 명시, 모델 입력 제외 항목(관찰 시간, SOFA 상태, Calcium_ionized), eval_meta 정의"
+  ],
+  "decisions": {
+    "keep_under18": true,
+    "use_HospAdmTime": false,
+    "use_SaO2": false,
+    "never_measured_cut": 90.0
+  },
+  "plausible_ranges": {
+    "HR": [
+      20,
+      250
+    ],
+    "O2Sat": [
+      50,
+      100
+    ],
+    "Temp": [
+      25,
+      45
+    ],
+    "SBP": [
+      40,
+      280
+    ],
+    "MAP": [
+      20,
+      250
+    ],
+    "DBP": [
+      10,
+      200
+    ],
+    "Resp": [
+      4,
+      80
+    ],
+    "EtCO2": [
+      0,
+      100
+    ],
+    "BaseExcess": [
+      -40,
+      40
+    ],
+    "HCO3": [
+      5,
+      60
+    ],
+    "FiO2": [
+      0.21,
+      1.0
+    ],
+    "pH": [
+      6.5,
+      8.0
+    ],
+    "PaCO2": [
+      10,
+      150
+    ],
+    "SaO2": [
+      50,
+      100
+    ],
+    "AST": [
+      1,
+      20000
+    ],
+    "BUN": [
+      1,
+      300
+    ],
+    "Alkalinephos": [
+      1,
+      5000
+    ],
+    "Calcium": [
+      3,
+      20
+    ],
+    "Chloride": [
+      50,
+      150
+    ],
+    "Creatinine": [
+      0.1,
+      30
+    ],
+    "Bilirubin_direct": [
+      0,
+      50
+    ],
+    "Glucose": [
+      10,
+      2000
+    ],
+    "Lactate": [
+      0.1,
+      35
+    ],
+    "Magnesium": [
+      0.3,
+      10
+    ],
+    "Phosphate": [
+      0.2,
+      20
+    ],
+    "Potassium": [
+      1.5,
+      10
+    ],
+    "Bilirubin_total": [
+      0.05,
+      60
+    ],
+    "TroponinI": [
+      0,
+      500
+    ],
+    "Hct": [
+      5,
+      75
+    ],
+    "Hgb": [
+      2,
+      25
+    ],
+    "PTT": [
+      10,
+      250
+    ],
+    "WBC": [
+      0.1,
+      500
+    ],
+    "Fibrinogen": [
+      20,
+      2000
+    ],
+    "Platelets": [
+      1,
+      2500
+    ]
+  },
+  "excluded_features": {
+    "EtCO2": "never-measured max 100.0%",
+    "HCO3": "never-measured max 97.9%",
+    "TroponinI": "never-measured max 97.6%",
+    "Bilirubin_direct": "never-measured max 97.2%",
+    "BaseExcess": "never-measured max 97.1%",
+    "Chloride": "never-measured max 91.9%",
+    "Fibrinogen": "never-measured max 90.2%",
+    "SaO2": "venous contamination suspected in setA",
+    "HospAdmTime": "no predictive value, hospital-specific distribution"
+  },
+  "redundant_features": {
+    "Hct": "Spearman rho 0.941 with Hgb (keep Hgb)",
+    "DBP": "Spearman rho 0.834 with MAP (keep MAP; SOFA 기준 변수, 관측률 97% vs 79%)"
+  },
+  "banned_time_features": {
+    "columns": [
+      "ICULOS"
+    ],
+    "name_patterns": [
+      "(?i)iculos",
+      "(?i)history_h",
+      "(?i)(^|_)cum",
+      "(?i)(^|_)los($|_)",
+      "(?i)since_admit"
+    ],
+    "reason": "비패혈증 기록이 약 60h에서 잘려 ICULOS<=60 행에서 AUROC 0.491. 패혈증 기록은 t_sepsis+3h에서 끝나 전체 체류 시간은 미래 정보."
+  },
+  "eval_only_columns": [
+    "row_id",
+    "Patient_ID",
+    "ICULOS",
+    "set",
+    "split",
+    "fold",
+    "SepsisLabel",
+    "t_sepsis",
+    "rel",
+    "label_at_start",
+    "iculos_le60",
+    "early_window",
+    "obs_hours"
+  ],
+  "transforms": {
+    "unit_merge": {
+      "from": [
+        "Unit1",
+        "Unit2"
+      ],
+      "to": "Unit",
+      "mapping": {
+        "Unit1==1": "MICU",
+        "Unit2==1": "SICU",
+        "both NaN": "Unknown"
+      }
+    },
+    "age_recode": {
+      "from": 100,
+      "to": 90
+    },
+    "calcium_ionized_threshold": 3
+  },
+  "window": {
+    "hours": 24,
+    "max_value_age_h": 23,
+    "since_cap_h": 24,
+    "min_obs_dispersion": 2,
+    "min_obs_skew": 3
+  },
+  "feature_vars": {
+    "vitals_window": [
+      "HR",
+      "Temp",
+      "Resp",
+      "MAP",
+      "SBP",
+      "O2Sat"
+    ],
+    "vital_stats": [
+      "last",
+      "mean",
+      "median",
+      "std",
+      "min",
+      "max",
+      "iqr",
+      "skew",
+      "cv",
+      "slope",
+      "delta6h"
+    ],
+    "labs": [
+      "WBC",
+      "Platelets",
+      "Creatinine",
+      "BUN",
+      "Bilirubin_total",
+      "Lactate",
+      "Glucose",
+      "Hgb",
+      "Potassium",
+      "Magnesium",
+      "Phosphate",
+      "Calcium",
+      "AST",
+      "Alkalinephos",
+      "FiO2",
+      "pH",
+      "PaCO2",
+      "PTT"
+    ],
+    "lab_stats": [
+      "last",
+      "delta_prev"
+    ],
+    "static": [
+      "Age",
+      "Gender",
+      "Unit"
+    ]
+  },
+  "derived_features": {
+    "deviation": {
+      "Temp": 37.0,
+      "pH": 7.4,
+      "PaCO2": 40.0
+    },
+    "ratio": {
+      "BUN_Creatinine": [
+        "BUN",
+        "Creatinine"
+      ]
+    },
+    "optional": {
+      "shock_index": [
+        "HR",
+        "SBP"
+      ]
+    }
+  },
+  "measurement_indicator_groups": {
+    "lactate": [
+      "Lactate"
+    ],
+    "fio2": [
+      "FiO2"
+    ],
+    "liver_panel": [
+      "AST",
+      "Alkalinephos",
+      "Bilirubin_total"
+    ]
+  },
+  "no_indicator_features": [
+    "DBP",
+    "pH",
+    "PaCO2",
+    "PTT"
+  ],
+  "sofa": {
+    "valid_age_h": 23,
+    "components": {
+      "coagulation": {
+        "var": "Platelets",
+        "type": "complete",
+        "cuts_desc": [
+          150,
+          100,
+          50,
+          20
+        ],
+        "direction": "lower_worse"
+      },
+      "liver": {
+        "var": "Bilirubin_total",
+        "type": "complete",
+        "cuts_asc": [
+          1.2,
+          2.0,
+          6.0,
+          12.0
+        ],
+        "direction": "higher_worse"
+      },
+      "renal": {
+        "var": "Creatinine",
+        "type": "partial_lower_bound",
+        "cuts_asc": [
+          1.2,
+          2.0,
+          3.5,
+          5.0
+        ],
+        "direction": "higher_worse"
+      },
+      "cardiovascular": {
+        "var": "MAP",
+        "type": "partial_0_or_1",
+        "threshold_lt": 70
+      },
+      "respiratory": {
+        "var": null,
+        "type": "not_computable",
+        "reason": "PaO2 없음"
+      },
+      "cns": {
+        "var": null,
+        "type": "not_computable",
+        "reason": "GCS 없음"
+      }
+    },
+    "total": "not_computable",
+    "delta": "per_component_sum",
+    "states": [
+      "OK",
+      "NOT_MEASURED",
+      "NOT_COMPUTABLE"
+    ],
+    "display_only": {
+      "state": "OK(창 안 측정) / NOT_MEASURED(창 안 측정 없음) / NOT_COMPUTABLE(데이터셋에 변수 없음)",
+      "value_age_h": "마지막 측정 이후 시간(0~23). 대시보드 표시용, 모델 입력 아님"
+    }
+  },
+  "qsofa": {
+    "resp_ge": 22,
+    "sbp_le": 100,
+    "mentation": "not_computable"
+  },
+  "labels": {
+    "sepsis": {
+      "source": "SepsisLabel",
+      "extra_shift_h": 0
+    },
+    "renal_24h": {
+      "enabled": false,
+      "definition": "KDIGO creatinine (+0.3 in 48h or 1.5x baseline)",
+      "horizon_h": 24
+    }
+  },
+  "feature_rules": {
+    "values": "창 안에서 실제로 측정된 값만 사용 (forward fill 값은 쓰지 않음)",
+    "window_rows": "현재 행 포함 최근 24행 (t-23 ~ t)",
+    "std": "ddof=1, 측정 2회 이상",
+    "iqr": "np.percentile(linear) 75% - 25%, 측정 2회 이상",
+    "skew": "모집단 g1 = m3 / m2^1.5, 측정 3회 이상",
+    "cv": "std / |mean|, 측정 2회 이상",
+    "slope": "측정점 최소제곱 직선의 기울기 (단위/시간), 측정 2회 이상",
+    "delta6h": "현재 값 - (t-6 이전 창 안 마지막 측정값), 측정 2회 이상",
+    "constant_window": "창 안 값이 모두 같으면 std = iqr = skew = slope = 0",
+    "lab_delta_prev": "창 안 마지막 측정값 - 창 안 직전 측정값",
+    "measurement": "meas_<묶음>_n24h = 창 안 측정한 시간 수, meas_<묶음>_since_h = 마지막 측정 이후 시간 (없으면 24)",
+    "sofa_delta": "항목별 (현재 점수 - 창 안 측정값들의 최저 점수)의 합, 계산 가능한 항목만",
+    "padding": "창 앞을 값이 전부 빈 행으로 채워도 결과 동일"
+  },
+  "model_input_excluded": {
+    "obs_hours": "관찰 시간(24h 상한) 단독 AUROC 0.567 → 시간 지름길. eval_meta와 API data_sufficiency에만 사용",
+    "sofa_states": "STALE 삭제 후에는 점수 결측 여부와 같은 정보. API 표시용",
+    "Calcium_ionized": "setB에만 있는 값 → 세트(병원) 표지 위험"
+  },
+  "optional_features": [
+    "shock_index"
+  ],
+  "eval_meta": {
+    "t_sepsis": "첫 SepsisLabel=1 시각 + 6h (공식 라벨이 t_sepsis-6부터 1이므로 역산. 라벨 자체는 이동하지 않음)",
+    "rel": "ICULOS - t_sepsis (비패혈증은 NaN)",
+    "label_at_start": "기록 첫 행부터 라벨 1인 환자 (실제 t_sepsis는 첫 행+6h보다 이를 수 있음)",
+    "iculos_le60": "ICULOS <= 60 (시간 지름길이 없는 평가 구간)",
+    "early_window": "-12 <= rel < -6 (라벨은 0이지만 경보가 유용한 구간, PhysioNet utility 기준)",
+    "obs_hours": "창 안 행 수 (1~24)"
+  }
+}

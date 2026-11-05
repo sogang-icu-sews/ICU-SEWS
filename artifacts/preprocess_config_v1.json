@@ -1,0 +1,169 @@
+{
+  "decisions": {
+    "keep_under18": true,
+    "use_HospAdmTime": false,
+    "use_SaO2": false,
+    "never_measured_cut": 90.0
+  },
+  "plausible_ranges": {
+    "HR": [
+      20,
+      250
+    ],
+    "O2Sat": [
+      50,
+      100
+    ],
+    "Temp": [
+      25,
+      45
+    ],
+    "SBP": [
+      40,
+      280
+    ],
+    "MAP": [
+      20,
+      250
+    ],
+    "DBP": [
+      10,
+      200
+    ],
+    "Resp": [
+      4,
+      80
+    ],
+    "EtCO2": [
+      0,
+      100
+    ],
+    "BaseExcess": [
+      -40,
+      40
+    ],
+    "HCO3": [
+      5,
+      60
+    ],
+    "FiO2": [
+      0.21,
+      1.0
+    ],
+    "pH": [
+      6.5,
+      8.0
+    ],
+    "PaCO2": [
+      10,
+      150
+    ],
+    "SaO2": [
+      50,
+      100
+    ],
+    "AST": [
+      1,
+      20000
+    ],
+    "BUN": [
+      1,
+      300
+    ],
+    "Alkalinephos": [
+      1,
+      5000
+    ],
+    "Calcium": [
+      3,
+      20
+    ],
+    "Chloride": [
+      50,
+      150
+    ],
+    "Creatinine": [
+      0.1,
+      30
+    ],
+    "Bilirubin_direct": [
+      0,
+      50
+    ],
+    "Glucose": [
+      10,
+      2000
+    ],
+    "Lactate": [
+      0.1,
+      35
+    ],
+    "Magnesium": [
+      0.3,
+      10
+    ],
+    "Phosphate": [
+      0.2,
+      20
+    ],
+    "Potassium": [
+      1.5,
+      10
+    ],
+    "Bilirubin_total": [
+      0.05,
+      60
+    ],
+    "TroponinI": [
+      0,
+      500
+    ],
+    "Hct": [
+      5,
+      75
+    ],
+    "Hgb": [
+      2,
+      25
+    ],
+    "PTT": [
+      10,
+      250
+    ],
+    "WBC": [
+      0.1,
+      500
+    ],
+    "Fibrinogen": [
+      20,
+      2000
+    ],
+    "Platelets": [
+      1,
+      2500
+    ]
+  },
+  "excluded_features": {
+    "EtCO2": "never-measured max 100.0%",
+    "HCO3": "never-measured max 97.9%",
+    "TroponinI": "never-measured max 97.6%",
+    "Bilirubin_direct": "never-measured max 97.2%",
+    "BaseExcess": "never-measured max 97.1%",
+    "Chloride": "never-measured max 91.9%",
+    "Fibrinogen": "never-measured max 90.2%",
+    "SaO2": "venous contamination suspected in setA",
+    "HospAdmTime": "no predictive value, hospital-specific distribution",
+    "Unit1/Unit2": "merge into one categorical (MICU/SICU/Unknown)"
+  },
+  "no_indicator_features": [
+    "DBP",
+    "pH",
+    "PaCO2",
+    "PTT"
+  ],
+  "age_recode": {
+    "from": 100,
+    "to": 90
+  },
+  "calcium_ionized_threshold": 3
+}
