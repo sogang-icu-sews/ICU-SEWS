@@ -9,12 +9,15 @@ from datetime import datetime, timezone
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
+# 한 시간 기록에 환자의 어떤 데이터가 들어가고, 어떤 값까지 허용할지 정의
 class HourlyMeasurement(BaseModel):
     """One hour of patient data."""
 
     model_config = ConfigDict(extra="allow")
 
     iculos: int = Field(alias="ICULOS", ge=1)
+    Resp: float | None = Field(default=None, allow_inf_nan=False)
+    SBP: float | None = Field(default=None, allow_inf_nan=False)
 
 
 class PredictionRequest(BaseModel):
