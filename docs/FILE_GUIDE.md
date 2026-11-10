@@ -38,6 +38,16 @@
 
 ## 모델·평가 파일
 
+GRU Colab 학습 추가 파일(담당: 이택훈):
+
+- `notebooks/ICU_SEWS_GRU_Colab.ipynb`: Drive 연결, Python 3.10 GPU 환경, 입력 준비, fold 학습·재개.
+- `scripts/prepare_gru_colab.py`: 공식 ZIP에서 고정 환자 분할·전처리 기준으로 GRU 입력 생성.
+- `scripts/train_gru.py`, `src/icu_sews/models/train_gru.py`: 환자 fold 검증, 학습·체크포인트·OOF 저장.
+- `src/icu_sews/models/gru.py`: 가변 길이와 정적 정보를 지원하는 GRU.
+- `requirements-gru-colab.txt`: Colab 학습의 Python 3.10 의존성 버전.
+- `tests/test_gru_training.py`: 환자·시간 경계, padding, 재개 결과 일치 및 test 제외 검증.
+- `docs/GRU_COLAB.md`: 데이터 준비, 실행, 재개, 평가 범위 안내.
+
 로지스틱 회귀 기준선 추가 파일(담당: 이택훈):
 
 - `src/icu_sews/models/logistic.py`: 중앙값 대치·표준화·로지스틱 회귀 Pipeline.

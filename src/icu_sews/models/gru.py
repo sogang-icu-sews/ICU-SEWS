@@ -1,11 +1,11 @@
 """GRU sequence model for 24-hour patient observations.
 
-Owner: 이택훈
-Next work: masking, Dataset/DataLoader, focal loss, early stopping, and calibration data export.
+Owner: 이택훈. Supports right-padded variable-length windows and static covariates.
 """
 
 import torch
 from torch import nn
+from torch.nn.utils.rnn import pack_padded_sequence
 
 
 class GruSepsisModel(nn.Module):
@@ -17,6 +17,7 @@ class GruSepsisModel(nn.Module):
         hidden_size: int = 64,
         num_layers: int = 2,
         dropout: float = 0.2,
+        static_size: int = 0,
     ) -> None:
         super().__init__()
         self.gru = nn.GRU(
@@ -26,9 +27,25 @@ class GruSepsisModel(nn.Module):
             batch_first=True,
             dropout=dropout if num_layers > 1 else 0.0,
         )
-        self.classifier = nn.Linear(hidden_size, 1)
+        self.static_size = static_size
+        self.dropout = nn.Dropout(dropout)
+        self.classifier = nn.Linear(hidden_size + static_size, 1)
 
-    def forward(self, sequence: torch.Tensor) -> torch.Tensor:
-        """Compute logits for a batch shaped ``[batch, time, features]``."""
+    def forward(
+        self,
+        sequence: torch.Tensor,
+        static: torch.Tensor | None = None,
+        lengths: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        """Ignore right padding; real missing observations remain valid time steps."""
+        if lengths is not None:
+            sequence = pack_padded_sequence(
+                sequence, lengths.cpu(), batch_first=True, enforce_sorted=False
+            )
         _, hidden = self.gru(sequence)
-        return self.classifier(hidden[-1]).squeeze(-1)
+        state = hidden[-1]
+        if self.static_size:
+            if static is None or static.shape != (state.shape[0], self.static_size):
+                raise ValueError("Static input shape does not match the model")
+            state = torch.cat([state, static], dim=1)
+        return self.classifier(self.dropout(state)).squeeze(-1)

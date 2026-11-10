@@ -107,6 +107,13 @@ docs/                    설계·API·파일별 작업 문서
 
 ## 현재 상태
 
+GRU는 [Colab 실행 노트북](https://colab.research.google.com/github/sogang-icu-sews/ICU-SEWS/blob/codex/gru-colab/notebooks/ICU_SEWS_GRU_Colab.ipynb)으로 학습할 수 있습니다.
+별도 Python 3.10 GPU 환경, Drive 체크포인트, 환자 단위 5-fold 학습을 제공합니다.
+이 경로는 데이터 담당의 새 **dev 85% / test 15%** 공통 분할을 사용하며,
+아래 기존 로지스틱 기준선의 70/15/15 분할과 구분합니다.
+데이터 준비·실행·검증 범위는 [GRU_COLAB.md](docs/GRU_COLAB.md)를 참고합니다.
+현재 코드 검증 단계이며 전체 데이터의 Colab GPU 학습 성능은 아직 측정하지 않았습니다.
+
 원본 PSV로 로지스틱 회귀 기준선을 학습하는 실행기를 제공합니다.
 설치·실행·평가 규칙은 [`docs/LOGISTIC_BASELINE.md`](docs/LOGISTIC_BASELINE.md)를 참고합니다.
 
