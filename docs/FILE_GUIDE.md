@@ -47,6 +47,9 @@ GRU Colab 학습 추가 파일(담당: 이택훈):
 - `requirements-gru-colab.txt`: Colab 학습의 Python 3.10 의존성 버전.
 - `tests/test_gru_training.py`: 환자·시간 경계, padding, 재개 결과 일치 및 test 제외 검증.
 - `docs/GRU_COLAB.md`: 데이터 준비, 실행, 재개, 평가 범위 안내.
+- `notebooks/ICU_SEWS_GRU_Compare.ipynb`: v2/v3 보정·경보 비교용 독립 Colab 노트북.
+- `scripts/compare_gru.py`, `src/icu_sews/evaluation/compare_gru.py`: 원래 fold 안의 환자 역할 분리, 보정·임계값 평가.
+- `tests/test_gru_comparison.py`, `docs/GRU_COMPARISON.md`: 비교 절차 검증과 지표·평가 한계 정의.
 
 로지스틱 회귀 기준선 추가 파일(담당: 이택훈):
 

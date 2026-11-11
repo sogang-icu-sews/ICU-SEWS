@@ -1,5 +1,8 @@
 # Colab에서 GRU 학습하기
 
+학습 후 v2/v3 확률 보정·경보 성능 비교는 [별도 비교 노트북 안내](GRU_COMPARISON.md)를 따른다.
+비교에는 GPU·GRU 재학습·원본 ZIP이 필요 없다.
+
 담당: 이택훈. 데이터 담당의 v4 전처리, 환자 dev 85% / test 15%, dev 5-fold를 사용한다.
 
 [Colab에서 노트북 열기](https://colab.research.google.com/github/sogang-icu-sews/ICU-SEWS/blob/codex/gru-colab/notebooks/ICU_SEWS_GRU_Colab.ipynb)
