@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 import sys
 from importlib.metadata import version
 from pathlib import Path
@@ -413,6 +414,9 @@ def compare(frame, out, seed=42, make_plots=True):
         ]
     ].agg(["mean", "std"]).to_csv(out / "alarm_fold_summary.csv")
     if make_plots:
+        # Colab's inline backend belongs to its kernel, not our isolated Python.
+        # Override it before import: matplotlib validates MPLBACKEND during import.
+        os.environ["MPLBACKEND"] = "Agg"
         import matplotlib
 
         matplotlib.use("Agg")

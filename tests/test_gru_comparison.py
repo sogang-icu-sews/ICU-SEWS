@@ -1,5 +1,11 @@
 """Calibrator/threshold isolation, exact threshold ties and timing definitions."""
 
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -163,3 +169,48 @@ def test_brier_skill_reference_is_explicit():
     base = np.full(4, 0.2)
     result = probability_metrics(y, base, base)
     assert result["Brier_skill"] == 0
+
+
+def test_cli_ignores_unavailable_inherited_plot_backend(data, tmp_path):
+    frame, manifest = data
+    for model in ["v2", "v3"]:
+        directory = tmp_path / model
+        directory.mkdir()
+        frame.to_parquet(directory / "oof_predictions.parquet", index=False)
+        summary = {
+            "complete_5fold": True,
+            "test_evaluated": False,
+            "folds": [
+                {"fold": int(fold), "all": {"rows": len(rows)}}
+                for fold, rows in frame.groupby("fold")
+            ],
+        }
+        (directory / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
+    manifest_path = tmp_path / "patient_split.csv"
+    manifest.to_csv(manifest_path, index=False)
+    out = tmp_path / "comparison"
+    repo = Path(__file__).resolve().parents[1]
+    # A fresh interpreter is essential: an already imported matplotlib hides the bug.
+    env = dict(os.environ, MPLBACKEND="module://missing_colab_backend.backend_inline")
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(repo / "scripts/compare_gru.py"),
+            "--v2",
+            str(tmp_path / "v2"),
+            "--v3",
+            str(tmp_path / "v3"),
+            "--manifest",
+            str(manifest_path),
+            "--out",
+            str(out),
+        ],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads((out / "metadata.json").read_text())["complete"] is True
+    assert (out / "calibration.png").stat().st_size > 0
+    assert (out / "calibration_zoom.png").stat().st_size > 0
