@@ -8,6 +8,9 @@ Drive 연결 후 위에서부터 실행한다. GPU·GRU 재학습·원본 ZIP은
 `gru_v3_lr0003_no_weight`이다. 각 폴더의 `summary.json`, `oof_predictions.parquet`를 사용한다.
 결과는 `MyDrive/SEWS_GRU/comparisons/v2_v3_<실행시각>`에 저장한다.
 
+v2 + Platt를 선택한 이후의 최종 단일 GRU 학습·경보 기준 확정·test 평가는
+[GRU_FINAL.md](GRU_FINAL.md)와 별도 최종 노트북을 사용한다.
+
 ## 평가 설계
 
 각 원래 GRU fold 안에서 환자를 병원×패혈증 여부로 층화하여 3개 그룹으로 나눈다.

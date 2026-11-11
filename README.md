@@ -112,7 +112,10 @@ GRU는 [Colab 실행 노트북](https://colab.research.google.com/github/sogang-
 이 경로는 데이터 담당의 새 **dev 85% / test 15%** 공통 분할을 사용하며,
 아래 기존 로지스틱 기준선의 70/15/15 분할과 구분합니다.
 데이터 준비·실행·검증 범위는 [GRU_COLAB.md](docs/GRU_COLAB.md)를 참고합니다.
-현재 코드 검증 단계이며 전체 데이터의 Colab GPU 학습 성능은 아직 측정하지 않았습니다.
+v2 + Platt 선택 이후에는 [최종 학습·test 평가 Colab 노트북](https://colab.research.google.com/github/sogang-icu-sews/ICU-SEWS/blob/codex/gru-colab/notebooks/ICU_SEWS_GRU_Final.ipynb)을 사용합니다.
+최종 GRU 학습, 별도 환자로 Platt·경보 임계값 설정, 고정 test 평가 순서를 제공하며
+설계와 재개 방법은 [GRU_FINAL.md](docs/GRU_FINAL.md)에 설명합니다.
+최종 파이프라인은 합성 데이터로 코드 검증했으며 실제 최종 test 결과는 Colab 실행 후 확인합니다.
 
 원본 PSV로 로지스틱 회귀 기준선을 학습하는 실행기를 제공합니다.
 설치·실행·평가 규칙은 [`docs/LOGISTIC_BASELINE.md`](docs/LOGISTIC_BASELINE.md)를 참고합니다.

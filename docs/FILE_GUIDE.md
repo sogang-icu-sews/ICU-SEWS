@@ -50,6 +50,9 @@ GRU Colab 학습 추가 파일(담당: 이택훈):
 - `notebooks/ICU_SEWS_GRU_Compare.ipynb`: v2/v3 보정·경보 비교용 독립 Colab 노트북.
 - `scripts/compare_gru.py`, `src/icu_sews/evaluation/compare_gru.py`: 원래 fold 안의 환자 역할 분리, 보정·임계값 평가.
 - `tests/test_gru_comparison.py`, `docs/GRU_COMPARISON.md`: 비교 절차 검증과 지표·평가 한계 정의.
+- `notebooks/ICU_SEWS_GRU_Final.ipynb`: v2 최종 학습, Platt, 단일 경보 임계값, 고정 test 평가.
+- `scripts/final_gru.py`, `src/icu_sews/models/final_gru.py`: 단계별 실행·재개·모델 고정·test 결과 저장.
+- `tests/test_final_gru.py`, `docs/GRU_FINAL.md`: 최종 환자 역할 분리, 전처리·재개·test 평가 검증과 실행 안내.
 
 로지스틱 회귀 기준선 추가 파일(담당: 이택훈):
 
