@@ -59,18 +59,14 @@ if uploaded_file is not None:
         elif "ICULOS" not in uploaded_df.columns:
             st.error("필수 컬럼 ICULOS가 없습니다.")
         else:
-            uploaded_df["ICULOS"] = pd.to_numeric(
-                uploaded_df["ICULOS"], errors="coerce"
-            )
+            uploaded_df["ICULOS"] = pd.to_numeric(uploaded_df["ICULOS"], errors="coerce")
 
             if uploaded_df["ICULOS"].isna().any():
                 st.error("ICULOS에 숫자가 아닌 값이 포함되어 있습니다.")
             elif (uploaded_df["ICULOS"] < 1).any():
                 st.error("ICULOS는 1 이상의 값이어야 합니다.")
             else:
-                uploaded_df = uploaded_df.sort_values(
-                    "ICULOS"
-                ).reset_index(drop=True)
+                uploaded_df = uploaded_df.sort_values("ICULOS").reset_index(drop=True)
 
                 if uploaded_df["ICULOS"].duplicated().any():
                     st.error("중복된 ICULOS 값이 있습니다.")
@@ -89,9 +85,7 @@ if uploaded_file is not None:
                     recent_24h = uploaded_df.tail(24).copy()
 
                     # SepsisLabel is an outcome label, not a prediction input.
-                    preview_df = recent_24h.drop(
-                        columns=["SepsisLabel"], errors="ignore"
-                    )
+                    preview_df = recent_24h.drop(columns=["SepsisLabel"], errors="ignore")
 
                     st.subheader("최근 24시간 관찰 데이터")
                     st.caption(
@@ -120,9 +114,7 @@ if uploaded_file is not None:
                                 ).copy()
 
                                 # API requires integer ICULOS values.
-                                api_frame["ICULOS"] = (
-                                    api_frame["ICULOS"].astype(int)
-                                )
+                                api_frame["ICULOS"] = api_frame["ICULOS"].astype(int)
 
                                 # Convert missing values to JSON null.
                                 records = (
@@ -139,32 +131,23 @@ if uploaded_file is not None:
                                 with st.spinner("위험도를 평가하고 있습니다..."):
                                     uploaded_result = predict(payload)
 
-                                st.session_state["uploaded_prediction"] = (
-                                    uploaded_result
-                                )
-                                st.session_state["uploaded_prediction_id"] = (
-                                    patient_id.strip()
-                                )
+                                st.session_state["uploaded_prediction"] = uploaded_result
+                                st.session_state["uploaded_prediction_id"] = patient_id.strip()
 
                             except Exception as error:
                                 st.error(f"예측 요청 실패: {error}")
 
                     # Display the uploaded patient's prediction separately.
-                    uploaded_result = st.session_state.get(
-                        "uploaded_prediction"
-                    )
+                    uploaded_result = st.session_state.get("uploaded_prediction")
 
                     if (
                         uploaded_result
-                        and st.session_state.get("uploaded_prediction_id")
-                        == patient_id.strip()
+                        and st.session_state.get("uploaded_prediction_id") == patient_id.strip()
                     ):
                         st.subheader("업로드 환자 예측 결과")
 
                         if uploaded_result.get("is_mock", False):
-                            st.warning(
-                                "Mock 예측입니다. 실제 모델의 예측 결과가 아닙니다."
-                            )
+                            st.warning("Mock 예측입니다. 실제 모델의 예측 결과가 아닙니다.")
 
                         score = uploaded_result.get("risk_score")
                         if score is not None:
@@ -173,9 +156,7 @@ if uploaded_file is not None:
                                 f"{float(score):.1%}",
                             )
 
-                        level = uploaded_result.get(
-                            "risk_level", "unknown"
-                        )
+                        level = uploaded_result.get("risk_level", "unknown")
                         st.write(f"위험 단계: {level}")
 
                         st.caption(
@@ -183,7 +164,6 @@ if uploaded_file is not None:
                             f" · 모델 버전: "
                             f"{uploaded_result.get('model_version', '미제공')}"
                         )
-
 
     except Exception as error:
         st.error(f"파일을 읽는 중 오류가 발생했습니다: {error}")

@@ -1,23 +1,25 @@
-# SEWS 데이터 파트: EDA · 전처리 · 특징 추출 · 로지스틱 회귀
+# SEWS 데이터 파트: EDA · 전처리 · 특징 추출 · 로지스틱 회귀 · LSTM
 
-ICU 패혈증 조기 경보 시스템(SEWS) 프로젝트(캡스톤디자인, 팀 포텐)에서 데이터 파트 코드를 모은 저장소다.
-담당 범위는 EDA, 환자 단위 분리, 결측 처리, 특징 추출, qSOFA·가용 SOFA 계산, 로지스틱 회귀 기준선 모델이다.
+ICU 패혈증 조기 경보 시스템(SEWS) 프로젝트(캡스톤디자인, 팀 포텐)에서 데이터 파트 코드를 모은 폴더다.
+담당 범위는 EDA, 환자 단위 분리, 결측 처리, 특징 추출, qSOFA·가용 SOFA 계산, 로지스틱 회귀 기준선 모델과 LSTM 모델이다.
 
-원본은 Google Colab 노트북(ICU-2 ~ ICU-5)이다. `src/`와 `models/`는 Black(88자)·타입 힌트·docstring 기준을 맞췄고,
-`eda/`와 `preprocess/`는 노트북 셀을 그대로 옮긴 것이다. 이 저장소의 `.py` 파일은 노트북의 셀 순서와 코드를 그대로 옮긴
-percent 형식(`# %%` 셀)이라서, VS Code·Jupyter에서 셀 단위로 실행할 수도 있고 `python`으로 한 번에 실행할 수도 있다.
+원본은 Google Colab 노트북(ICU-2 ~ ICU-6)이다. `src/`와 `models/`는 타입 힌트·docstring 기준을 맞췄고,
+`eda/`와 `preprocess/`는 노트북의 셀 순서와 코드를 그대로 옮긴 percent 형식(`# %%` 셀)이라서 VS Code·Jupyter에서
+셀 단위로 실행할 수도 있고 `python`으로 한 번에 실행할 수도 있다. 모든 `.py` 파일은 저장소 CI(ruff 검사·형식, pytest)를 통과한다.
 
 ## 폴더 구조
 
 ```
-eda/eda_icu.py                 # ICU-2: 데이터 병합, 환자 분리, Part 1 (A/B 비교), Part 2 (라벨·시간·신호), 0단계 저장
-preprocess/icu_preprocess.py   # ICU-3: 1단계 정제, 2단계 특징 125+1개, 3단계 누수 검사·fold 0 기준선
-preprocess/icu_model_prep.py   # ICU-4: fold별 스케일링·대치 파라미터, LSTM 입력 배열
+eda/eda_icu2.py                 # ICU-2: 데이터 병합, 환자 분리, Part 1 (A/B 비교), Part 2 (라벨·시간·신호), 0단계 저장
+preprocess/icu_preprocess.py    # ICU-3: 1단계 정제, 2단계 특징 125+1개, 3단계 누수 검사·fold 0 기준선
+preprocess/icu_model_prep.py    # ICU-4: fold별 스케일링·대치 파라미터, LSTM 입력 배열
 models/train_logreg.py          # ICU-5: 로지스틱 회귀 5-fold CV, 보정, 경보 임계값, 결과 저장
-models/train_lstm.py            # ICU-6 : LSTM 적용 5-fold CV, 보정, 경보 임계값 (AUROC 0.776, Utility 0.282), 결과 저장
+models/train_lstm.py            # ICU-6: LSTM 5-fold CV (GPU 권장), 보정, 경보 임계값, 결과 저장
 src/sews_features.py            # 정제 + 24시간 창 특징 (학습용 계산 / API용 참조 계산)
 src/sews_preprocess.py          # fold별 스케일링·대치, LSTM 창 생성
 src/sews_eval.py                # 공용 평가: AUROC·AUPRC·조기 구간·환자 단위·Brier·ECE, PhysioNet 공식 Utility
+src/sews_check.py               # 전처리 때 기록한 모듈과 지금 모듈이 같은 코드인지 확인
+../tests/data_part/             # pytest: 특징·전처리·평가·모듈 확인 검사 (가짜 환자 데이터, 약 15초)
 ```
 
 ## 데이터
@@ -28,21 +30,27 @@ PhysioNet/CinC Challenge 2019 training_setA/B (`.psv`, 40,336명, 1,552,210행).
 
 ## 실행 순서
 
+`data/` 폴더에서 실행한다.
+
 ```bash
-pip install -r requirements.txt
+cd data
+pip install -r requirements.txt   # Colab에는 대부분 설치돼 있고 mlflow만 없다 (저장소 루트에서는 uv sync --group data)
 export SEWS_ROOT=/content/drive/MyDrive/capston   # training.zip 위치이자 산출물 저장 위치 (기본값)
 export SEWS_RAW=/content/physionet                # training.zip 압축 해제 위치 (기본값)
 
 python eda/eda_icu2.py                  # 약 5분. figures/eda, artifacts/ (실행 위치) + SEWS_ROOT/data, artifacts
-python preprocess/icu3_preprocess.py    # 약 5분.  features.parquet, eval_meta.parquet, feature_registry.json
-python preprocess/icu4_model_prep.py    # 약 5분.  preprocess_params/, seq_values.npy
+python preprocess/icu_preprocess.py     # 약 5분.  features.parquet, eval_meta.parquet, feature_registry.json
+python preprocess/icu_model_prep.py     # 약 5분.  preprocess_params/, seq_values.npy
 python models/train_logreg.py --root $SEWS_ROOT   # 약 10~13분. results/logreg/
+python models/train_lstm.py --root $SEWS_ROOT     # T4 GPU 약 15~25분 (CPU는 수 시간). results/lstm/
 ```
 
 Colab에서는 각 파일을 셀 단위로 실행하면 된다(첫 셀이 Drive를 연결한다). 메모리 7GB 환경에서 전체 순서대로 실행해
 노트북과 같은 결과가 나오는 것을 확인했다(EDA 출력 숫자 일치, 기준선 AUROC 0.799, 로지스틱 회귀 AUROC 0.769).
-특징·전처리 모듈은 항상 저장소의 `src/`를 쓴다. 3·4단계는 모듈의 sha256을 `feature_registry.json`에 기록하고,
-로지스틱 회귀는 실행 전에 같은 모듈인지 확인한다.
+특징·전처리 모듈은 항상 `data/src/`를 쓴다. 3·4단계는 모듈의 sha256을 `feature_registry.json`에 기록하고,
+4단계·로지스틱 회귀·LSTM은 실행 전에 같은 모듈인지 확인한다(`src/sews_check.py`). 바이트가 같으면 통과하고,
+형식만 정리돼 바이트가 다르면 `SEWS_ROOT/src`의 원본(기록된 sha256과 일치)과 주석·공백·docstring을 뺀 구문 트리가
+같은지 비교한다. 실행되는 코드가 다르면 중단한다.
 
 ## 지킨 원칙
 
@@ -67,7 +75,29 @@ Colab에서는 각 파일을 셀 단위로 실행하면 된다(첫 셀이 Drive�
 |---|---|---|---|---|
 | 로지스틱 회귀 (C=0.01, balanced) | 0.769 ± 0.008 | 0.064 ± 0.003 | 0.757 | Utility 0.273, Brier 0.0172 (Isotonic 보정) |
 | LightGBM 기준선 (fold 0, 튜닝 없음) | 0.799 | 0.073 | 0.792 | ICU-3 [3-5] 점검용 |
-| LSTM 5-fold CV, 보정, 경보 임계값 (AUROC 0.776, Utility 0.282) |
+| LSTM (h64, 1층, lr 3e-4) | 0.776 ± 0.015 | 0.071 | 0.762 | Utility 0.282, Brier 0.0173 (Platt 보정) |
+
+## 검사 (저장소 CI)
+
+저장소 루트에서 GitHub Actions와 같은 순서로 실행한다 (Python 3.10).
+
+```bash
+uv sync --group dev
+uv run ruff check .
+uv run ruff format --check .
+uv run pytest
+```
+
+`tests/data_part/`는 실제 데이터 없이 가짜 환자 40명으로 다음을 확인한다.
+
+- 손계산 예시(ICU-3 [2-3])와 특징 값이 같다.
+- 모든 행에서 학습용 특징(`build_features`) = API용 특징(`build_features_window`), LSTM 창 = API 창.
+- 미래 행이나 다른 환자 행을 바꿔도 현재 시각의 특징·창이 그대로다 (예측 시각 이후 데이터 미사용).
+- 벡터화 Utility = PhysioNet 공식 함수, 라벨을 다시 6시간 이동시키지 않는다.
+- 스케일링 파라미터가 학습 행만으로 정해진다.
+
+`eda/`·`preprocess/`는 노트북 셀 구조를 유지하므로 루트 `pyproject.toml`의 per-file-ignores에서 E402(셀 중간 import),
+F811(셀마다 재정의), E501(긴 표·문자열)만 예외로 둔다. `src/`·`models/`에는 예외가 없다.
 
 ## 출처
 

@@ -112,12 +112,8 @@ def parse_args() -> argparse.Namespace:
     """Parse command-line options."""
     ap = argparse.ArgumentParser(description="SEWS logistic regression (5-fold CV).")
     ap.add_argument("--root", required=True, help="데이터 루트 (data/, artifacts/)")
-    ap.add_argument(
-        "--src-dir", default=None, help="sews_*.py 위치 (기본: 저장소 src/)"
-    )
-    ap.add_argument(
-        "--out-dir", default=None, help="결과 폴더 (기본: <root>/results/logreg)"
-    )
+    ap.add_argument("--src-dir", default=None, help="sews_*.py 위치 (기본: 저장소 src/)")
+    ap.add_argument("--out-dir", default=None, help="결과 폴더 (기본: <root>/results/logreg)")
     ap.add_argument("--no-mlflow", action="store_true", help="MLflow 기록 생략")
     return ap.parse_args()
 
@@ -145,9 +141,11 @@ def load_inputs(root: str, src_dir: str) -> dict:
         "sews_features.py": registry["module_sha256"],
         "sews_preprocess.py": registry["preprocess"]["module_sha256"],
     }
+    from sews_check import module_matches
+
     for mod, digest in expected.items():
-        if sha256(f"{src_dir}/{mod}") != digest:
-            raise RuntimeError(f"{mod}가 전처리 단계 때와 다르다 (sha256 불일치)")
+        how = module_matches(f"{src_dir}/{mod}", digest, ref_dir=f"{root}/src")
+        LOG.info("[OK] %s: 전처리 때와 %s", mod, how)
 
     model_cols = [r["name"] for r in registry["features"] if not r["optional"]]
     f_all = pd.read_parquet(f"{data}/features.parquet")
@@ -236,9 +234,7 @@ def run_cv(pp: ModuleType, ev: ModuleType, d: dict) -> tuple[pd.DataFrame, dict]
                     C=c,
                     class_weight=str(cw),
                     n_iter=int(m.n_iter_[0]),
-                    converged=not any(
-                        "converge" in str(x_.message).lower() for x_ in w
-                    ),
+                    converged=not any("converge" in str(x_.message).lower() for x_ in w),
                     sec=round(time.time() - t0, 1),
                 )
                 rows.append(r)
@@ -291,11 +287,7 @@ def calibration(ev: ModuleType, em: pd.DataFrame, p_raw: np.ndarray) -> dict:
         )
     cal = pd.DataFrame(rows).set_index("model")
     cal["Brier_skill"] = 1 - cal["Brier"] / cal.loc[BASELINE_NAME, "Brier"]
-    use = (
-        "Platt"
-        if cal.loc["Platt", "Brier"] <= cal.loc["Isotonic", "Brier"]
-        else "Isotonic"
-    )
+    use = "Platt" if cal.loc["Platt", "Brier"] <= cal.loc["Isotonic", "Brier"] else "Isotonic"
     return {
         "table": cal,
         "p_platt": p_platt,
@@ -318,9 +310,7 @@ def thresholds(ev: ModuleType, em: pd.DataFrame, p_cal: np.ndarray) -> dict:
     tbl = pd.DataFrame(
         [
             dict(name="utility_optimal", **ev.threshold_report(em, p_cal, thr_u, idx)),
-            dict(
-                name="specificity_95", **ev.threshold_report(em, p_cal, sens_thr, idx)
-            ),
+            dict(name="specificity_95", **ev.threshold_report(em, p_cal, sens_thr, idx)),
             dict(name="spec_warning_0.5", **ev.threshold_report(em, p_cal, 0.5, idx)),
             dict(name="spec_alert_0.75", **ev.threshold_report(em, p_cal, 0.75, idx)),
         ]
@@ -336,9 +326,7 @@ def thresholds(ev: ModuleType, em: pd.DataFrame, p_cal: np.ndarray) -> dict:
 
 
 # --------------------------------------------------------------------------- 최종 모델
-def fit_final(
-    pp: ModuleType, ev: ModuleType, d: dict, best_c: float, p_raw: np.ndarray
-) -> dict:
+def fit_final(pp: ModuleType, ev: ModuleType, d: dict, best_c: float, p_raw: np.ndarray) -> dict:
     """Fit the final model on all dev rows and calibrators on dev OOF predictions."""
     y = d["em"]["SepsisLabel"].to_numpy()
     x_dev = pp.apply_tabular(d["F"], d["params"]["final"]["tabular"], d["model_cols"])
@@ -390,12 +378,8 @@ def plot_roc_pr(ev: ModuleType, em: pd.DataFrame, p: np.ndarray, path: str) -> N
         ylabel="True positive rate",
         title="ROC (5-fold OOF, logistic regression)",
     )
-    axes[1].axhline(
-        y.mean(), color="gray", lw=0.8, ls="--", label=f"base rate {y.mean():.3f}"
-    )
-    axes[1].set(
-        xlabel="Recall", ylabel="Precision", title="Precision-Recall (5-fold OOF)"
-    )
+    axes[1].axhline(y.mean(), color="gray", lw=0.8, ls="--", label=f"base rate {y.mean():.3f}")
+    axes[1].set(xlabel="Recall", ylabel="Precision", title="Precision-Recall (5-fold OOF)")
     for ax in axes:
         ax.legend(fontsize=8)
         ax.grid(alpha=0.3)
@@ -404,9 +388,7 @@ def plot_roc_pr(ev: ModuleType, em: pd.DataFrame, p: np.ndarray, path: str) -> N
     plt.close(fig)
 
 
-def plot_calibration(
-    y: np.ndarray, curves: list[tuple[np.ndarray, str, str]], path: str
-) -> None:
+def plot_calibration(y: np.ndarray, curves: list[tuple[np.ndarray, str, str]], path: str) -> None:
     """Reliability diagram with 20 equal-count bins (full range and 0-0.3 zoom)."""
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
     for p, name, col in curves:
@@ -508,9 +490,7 @@ def log_mlflow(
     shutil.rmtree(local, ignore_errors=True)
     os.makedirs(local)
     mlflow.set_tracking_uri(f"sqlite:///{local}/mlflow.db")
-    exp_id = mlflow.create_experiment(
-        "sews_logreg", artifact_location=f"{local}/artifacts"
-    )
+    exp_id = mlflow.create_experiment("sews_logreg", artifact_location=f"{local}/artifacts")
     names = {
         "AUROC": "AUROC",
         "AUPRC": "AUPRC",
@@ -530,22 +510,14 @@ def log_mlflow(
                 }
             )
             for _, r in g.iterrows():
-                mlflow.log_metrics(
-                    {"AUROC": r["AUROC"], "AUPRC": r["AUPRC"]}, step=int(r["fold"])
-                )
-            mlflow.log_metrics(
-                {f"mean_{v}": float(g[k].mean()) for k, v in names.items()}
-            )
+                mlflow.log_metrics({"AUROC": r["AUROC"], "AUPRC": r["AUPRC"]}, step=int(r["fold"]))
+            mlflow.log_metrics({f"mean_{v}": float(g[k].mean()) for k, v in names.items()})
             if (c, cw) == (best_c, "balanced"):
                 mlflow.set_tag("selected", "true")
-                mlflow.log_metrics(
-                    {"utility_crossfit": u_cf, f"brier_{cal_name}": brier_sel}
-                )
+                mlflow.log_metrics({"utility_crossfit": u_cf, f"brier_{cal_name}": brier_sel})
                 mlflow.log_artifacts(fig_dir, artifact_path="figures")
     shutil.copytree(local, f"{out_dir}/mlflow", dirs_exist_ok=True)
-    LOG.info(
-        "[OK] MLflow run %d개 기록", len(mlflow.search_runs(experiment_ids=[exp_id]))
-    )
+    LOG.info("[OK] MLflow run %d개 기록", len(mlflow.search_runs(experiment_ids=[exp_id])))
 
 
 def main() -> None:
@@ -674,9 +646,7 @@ def main() -> None:
         "spec_targets": {
             "AUROC>=0.82": bool(mean["AUROC"] >= 0.82),
             "AUPRC>=0.40": bool(mean["AUPRC"] >= 0.40),
-            "Brier<=0.15 (calibrated)": bool(
-                ctab.loc[cal["selected"], "Brier"] <= 0.15
-            ),
+            "Brier<=0.15 (calibrated)": bool(ctab.loc[cal["selected"], "Brier"] <= 0.15),
         },
         "notes": [
             "행 단위 지표 기준",

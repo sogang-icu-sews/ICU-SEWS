@@ -75,7 +75,6 @@ GPU에서는 cuDNN 계산 순서 때문에 best epoch와 소수 셋째 자리가
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import logging
 import os
@@ -125,18 +124,10 @@ def parse_args() -> argparse.Namespace:
     """Parse command-line options."""
     ap = argparse.ArgumentParser(description="SEWS LSTM (5-fold CV).")
     ap.add_argument("--root", required=True, help="데이터 루트 (data/, artifacts/)")
-    ap.add_argument(
-        "--src-dir", default=None, help="sews_*.py 위치 (기본: 저장소 src/)"
-    )
-    ap.add_argument(
-        "--out-dir", default=None, help="결과 폴더 (기본: <root>/results/lstm)"
-    )
-    ap.add_argument(
-        "--local-dir", default=None, help="입력 배열 복사 위치 (기본: 임시 폴더)"
-    )
-    ap.add_argument(
-        "--smoke", action="store_true", help="fold마다 6만 행, 2 epoch 시험 실행"
-    )
+    ap.add_argument("--src-dir", default=None, help="sews_*.py 위치 (기본: 저장소 src/)")
+    ap.add_argument("--out-dir", default=None, help="결과 폴더 (기본: <root>/results/lstm)")
+    ap.add_argument("--local-dir", default=None, help="입력 배열 복사 위치 (기본: 임시 폴더)")
+    ap.add_argument("--smoke", action="store_true", help="fold마다 6만 행, 2 epoch 시험 실행")
     return ap.parse_args()
 
 
@@ -186,18 +177,18 @@ def load_inputs(pp: ModuleType, root: str, src_dir: str, local_dir: str) -> dict
     registry = load_json(f"{art}/feature_registry.json")
     if cfg["version"] != 4:
         raise RuntimeError(f"config v{cfg['version']}: 4단계 v4가 필요하다")
-    with open(f"{src_dir}/sews_preprocess.py", "rb") as f:
-        if (
-            hashlib.sha256(f.read()).hexdigest()
-            != registry["preprocess"]["module_sha256"]
-        ):
-            raise RuntimeError("sews_preprocess.py가 4단계 때와 다르다 (sha256 불일치)")
+    from sews_check import module_matches
+
+    how = module_matches(
+        f"{src_dir}/sews_preprocess.py",
+        registry["preprocess"]["module_sha256"],
+        ref_dir=f"{root}/src",
+    )
+    LOG.info("[OK] sews_preprocess.py: 4단계 때와 %s", how)
 
     em_all = pd.read_parquet(f"{data}/eval_meta.parquet")
     static_cols = cfg["model_prep"]["sequence"]["static"]
-    f_static = pd.read_parquet(
-        f"{data}/features.parquet", columns=["row_id", *static_cols]
-    )
+    f_static = pd.read_parquet(f"{data}/features.parquet", columns=["row_id", *static_cols])
     if not (f_static["row_id"].to_numpy() == em_all["row_id"].to_numpy()).all():
         raise RuntimeError("features와 eval_meta의 row_id 순서가 다르다")
     params = {}
@@ -256,12 +247,8 @@ class WindowBuilder:
         li = torch.where(obs, self.steps[None, :, None], neg).cummax(dim=1).values
         ff = torch.gather(raw, 1, li.clamp(min=0))
         ff = torch.where(li >= 0, ff, torch.full_like(ff, float("nan")))
-        delta = torch.where(
-            li >= 0, self.steps[None, :, None] - li, torch.full_like(li, 24)
-        )
-        x = torch.nan_to_num(
-            torch.clamp((ff - c) / s, -sp["clip"], sp["clip"]), nan=0.0
-        )
+        delta = torch.where(li >= 0, self.steps[None, :, None] - li, torch.full_like(li, 24))
+        x = torch.nan_to_num(torch.clamp((ff - c) / s, -sp["clip"], sp["clip"]), nan=0.0)
         m = self.mask_idx
         return torch.cat([x, obs[..., m].float(), delta.float()[..., m] / 24], dim=2)
 
@@ -285,9 +272,7 @@ def check_windows(pp: ModuleType, wb: WindowBuilder, d: dict) -> None:
     ref = pp.seq_windows(d["seq_values"], d["row_start"], pick, sp, d["cfg"])
     ref_cat = np.concatenate([ref["x"], ref["mask"], ref["delta"]], axis=2)
     got = wb(torch.from_numpy(pick).to(wb.device), sp).cpu().numpy()
-    if got.shape != ref_cat.shape or not np.allclose(
-        got, ref_cat, rtol=1e-6, atol=1e-6
-    ):
+    if got.shape != ref_cat.shape or not np.allclose(got, ref_cat, rtol=1e-6, atol=1e-6):
         raise RuntimeError("GPU 창이 4단계 seq_windows와 다르다")
     LOG.info(
         "[OK] 장치 창 = 4단계 seq_windows (%d개 창, 최대 차이 %.1e)",
@@ -353,9 +338,7 @@ class Trainer:
             out.append(torch.sigmoid(model(self.wb(r, sp), st_t[r])).float().cpu())
         return torch.cat(out).numpy()
 
-    def split_inner(
-        self, train_rows: np.ndarray, seed: int
-    ) -> tuple[np.ndarray, np.ndarray]:
+    def split_inner(self, train_rows: np.ndarray, seed: int) -> tuple[np.ndarray, np.ndarray]:
         """Hold out INNER_VAL of the training patients for early stopping."""
         pids = self.d["em_all"]["Patient_ID"].to_numpy()
         up = np.unique(pids[train_rows])
@@ -412,15 +395,10 @@ class Trainer:
                 p = self.predict(model, inner_rows, sp, st_t)
                 row["inner_AUPRC"] = average_precision_score(y_all[inner_rows], p)
                 row["inner_AUROC"] = roc_auc_score(y_all[inner_rows], p)
-                msg += (
-                    f" | inner AUPRC {row['inner_AUPRC']:.4f}"
-                    f" AUROC {row['inner_AUROC']:.4f}"
-                )
+                msg += f" | inner AUPRC {row['inner_AUPRC']:.4f} AUROC {row['inner_AUROC']:.4f}"
                 if row["inner_AUPRC"] > best:
                     best, best_ep, wait = row["inner_AUPRC"], ep, 0
-                    best_state = {
-                        k: v.detach().clone() for k, v in model.state_dict().items()
-                    }
+                    best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
                 else:
                     wait += 1
             hist.append(row)
@@ -456,9 +434,7 @@ def run_cv(
         else:
             tr_rows, inner = tr.split_inner(dev_rows[folds != k], SEED + k)
             if smoke:
-                tr_rows = np.random.default_rng(k).choice(
-                    tr_rows, SMOKE_ROWS, replace=False
-                )
+                tr_rows = np.random.default_rng(k).choice(tr_rows, SMOKE_ROWS, replace=False)
             st_t = tr.static_tensor(pp, d["params"][k]["tabular"])
             sp = d["params"][k]["sequence"]
             t0 = time.time()
@@ -474,9 +450,7 @@ def run_cv(
             p = tr.predict(model, va_rows, sp, st_t)
             oof[va_local] = p
             best_epochs[k] = best_ep
-            np.savez(
-                path, p=p, best_epoch=best_ep, history=hist.to_json(orient="records")
-            )
+            np.savez(path, p=p, best_epoch=best_ep, history=hist.to_json(orient="records"))
             torch.save(model.state_dict(), f"{ckpt_dir}/fold{k}_model.pt")
             histories.append(hist.assign(fold=k))
             LOG.info(
@@ -530,11 +504,7 @@ def calibrate(ev: ModuleType, em: pd.DataFrame, p_raw: np.ndarray) -> dict:
         )
     cal = pd.DataFrame(rows).set_index("model")
     cal["Brier_skill"] = 1 - cal["Brier"] / cal.loc[BASELINE_NAME, "Brier"]
-    use = (
-        "Platt"
-        if cal.loc["Platt", "Brier"] <= cal.loc["Isotonic", "Brier"]
-        else "Isotonic"
-    )
+    use = "Platt" if cal.loc["Platt", "Brier"] <= cal.loc["Isotonic", "Brier"] else "Isotonic"
     return {
         "table": cal,
         "p_platt": p_platt,
@@ -557,9 +527,7 @@ def thresholds(ev: ModuleType, em: pd.DataFrame, p_cal: np.ndarray) -> dict:
     tbl = pd.DataFrame(
         [
             dict(name="utility_optimal", **ev.threshold_report(em, p_cal, thr_u, idx)),
-            dict(
-                name="specificity_95", **ev.threshold_report(em, p_cal, sens_thr, idx)
-            ),
+            dict(name="specificity_95", **ev.threshold_report(em, p_cal, sens_thr, idx)),
             dict(name="spec_warning_0.5", **ev.threshold_report(em, p_cal, 0.5, idx)),
             dict(name="spec_alert_0.75", **ev.threshold_report(em, p_cal, 0.75, idx)),
         ]
@@ -592,9 +560,7 @@ def plot_curves(ev: ModuleType, cv: dict, cal: dict, path: str) -> None:
     ]:
         fpr, tpr, _ = ev.roc_curve(y[mask], p_raw[mask])
         auc = roc_auc_score(y[mask], p_raw[mask])
-        axes[1].plot(
-            fpr, tpr, color=col, lw=1.8, label=f"{name}, pooled (AUROC {auc:.3f})"
-        )
+        axes[1].plot(fpr, tpr, color=col, lw=1.8, label=f"{name}, pooled (AUROC {auc:.3f})")
     axes[1].plot([0, 1], [0, 1], color="gray", ls="--", lw=0.8)
     axes[1].set(
         xlabel="False positive rate",
@@ -693,9 +659,7 @@ def export(
         "trained_on": "dev 전체 (test 미사용)",
         "torch_version": torch.__version__,
         "device": str(device),
-        "module_sha256": {
-            "sews_preprocess": d["registry"]["preprocess"]["module_sha256"]
-        },
+        "module_sha256": {"sews_preprocess": d["registry"]["preprocess"]["module_sha256"]},
     }
     with open(f"{out_dir}/model/lstm_final_meta.json", "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=2)
@@ -762,9 +726,7 @@ def export(
                 "model": "Logistic regression",
                 **{k: s_lr["cv_mean_std"][k][0] for k in keys},
                 "Utility": s_lr["utility"]["crossfit"],
-                "Brier(cal)": s_lr["calibration"][s_lr["selected_calibration"]][
-                    "Brier"
-                ],
+                "Brier(cal)": s_lr["calibration"][s_lr["selected_calibration"]]["Brier"],
             }
         )
     cmp_df = pd.DataFrame(rows).set_index("model")
