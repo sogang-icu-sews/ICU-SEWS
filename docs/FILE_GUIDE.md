@@ -53,6 +53,8 @@ GRU Colab 학습 추가 파일(담당: 이택훈):
 - `notebooks/ICU_SEWS_GRU_Final.ipynb`: v2 최종 학습, Platt, 단일 경보 임계값, 고정 test 평가.
 - `scripts/final_gru.py`, `src/icu_sews/models/final_gru.py`: 단계별 실행·재개·모델 고정·test 결과 저장.
 - `tests/test_final_gru.py`, `docs/GRU_FINAL.md`: 최종 환자 역할 분리, 전처리·재개·test 평가 검증과 실행 안내.
+- `notebooks/ICU_SEWS_GRU_Bootstrap.ipynb`, `scripts/bootstrap_gru.py`: 고정된 최종 예측으로 환자 단위 신뢰구간 계산.
+- `src/icu_sews/evaluation/bootstrap_gru.py`, `tests/test_gru_bootstrap.py`, `docs/GRU_BOOTSTRAP.md`: 환자 복원추출·가중 지표·검증·해석.
 
 로지스틱 회귀 기준선 추가 파일(담당: 이택훈):
 
