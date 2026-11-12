@@ -107,6 +107,11 @@ docs/                    설계·API·파일별 작업 문서
 
 ## 현재 상태
 
+GRU v1~v3 학습 과정, v2 + Platt 선택 근거, 최종 test 성능과 환자 단위 95% 신뢰구간은
+[GRU 실험·최종 평가 보고서 (2026-11-12)](docs/GRU_EXPERIMENT_REPORT_2026-11-12.md)에 정리했습니다.
+최종 AUROC는 **0.76316 (95% CI 0.74422–0.78153)**,
+Utility는 **0.12141 (0.09736–0.14558)**입니다. 감지율과 병원별 경보 부담의 한계도 함께 보고합니다.
+
 GRU는 [Colab 실행 노트북](https://colab.research.google.com/github/sogang-icu-sews/ICU-SEWS/blob/codex/gru-colab/notebooks/ICU_SEWS_GRU_Colab.ipynb)으로 학습할 수 있습니다.
 별도 Python 3.10 GPU 환경, Drive 체크포인트, 환자 단위 5-fold 학습을 제공합니다.
 이 경로는 데이터 담당의 새 **dev 85% / test 15%** 공통 분할을 사용하며,
@@ -115,7 +120,7 @@ GRU는 [Colab 실행 노트북](https://colab.research.google.com/github/sogang-
 v2 + Platt 선택 이후에는 [최종 학습·test 평가 Colab 노트북](https://colab.research.google.com/github/sogang-icu-sews/ICU-SEWS/blob/codex/gru-colab/notebooks/ICU_SEWS_GRU_Final.ipynb)을 사용합니다.
 최종 GRU 학습, 별도 환자로 Platt·경보 임계값 설정, 고정 test 평가 순서를 제공하며
 설계와 재개 방법은 [GRU_FINAL.md](docs/GRU_FINAL.md)에 설명합니다.
-최종 파이프라인은 합성 데이터로 코드 검증했으며 실제 최종 test 결과는 Colab 실행 후 확인합니다.
+최종 파이프라인은 합성 데이터로 코드 검증했고, 사용자가 공유한 Colab 최종 test·bootstrap 결과를 위 보고서에 기록했습니다.
 
 원본 PSV로 로지스틱 회귀 기준선을 학습하는 실행기를 제공합니다.
 설치·실행·평가 규칙은 [`docs/LOGISTIC_BASELINE.md`](docs/LOGISTIC_BASELINE.md)를 참고합니다.
@@ -125,5 +130,4 @@ v2 + Platt 선택 이후에는 [최종 학습·test 평가 Colab 노트북](http
 .venv\Scripts\python.exe scripts/train_logistic.py
 ```
 
-API는 아직 Mock 예측 경로를 사용합니다. 기준선은 별도 학습 산출물이며 API 연결,
-XGBoost/GRU 학습과 임상 검증은 완료되지 않았습니다.
+API는 아직 Mock 예측 경로를 사용합니다. 학습 산출물의 실제 API 연결과 임상 적용 검증은 별도 단계입니다.

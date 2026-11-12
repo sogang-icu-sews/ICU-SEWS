@@ -38,6 +38,9 @@
 
 ## 모델·평가 파일
 
+- [GRU 실험·최종 평가 보고서 (2026-11-12)](GRU_EXPERIMENT_REPORT_2026-11-12.md):
+  v1~v3 학습 과정, 보정·경보 비교, 최종 test 성능·95% 신뢰구간, 해석과 후속 과제.
+
 GRU Colab 학습 추가 파일(담당: 이택훈):
 
 - `notebooks/ICU_SEWS_GRU_Colab.ipynb`: Drive 연결, Python 3.10 GPU 환경, 입력 준비, fold 학습·재개.
