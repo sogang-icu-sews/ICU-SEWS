@@ -33,9 +33,6 @@ dev = [
   "pytest-cov>=5.0,<8.0",
   "ruff>=0.7,<1.0",
 ]
-
-[dependency-groups]
-# (dev는 그대로)
 data = [   # 데이터 파트 스크립트 실행용: uv sync --group data
   "lightgbm>=4.0,<5.0",
   "matplotlib>=3.8,<4.0",
