@@ -34,8 +34,9 @@ dev = [
   "ruff>=0.7,<1.0",
 ]
 
-# 데이터 파트 스크립트(eda/, preprocess/, models/) 실행용 추가 패키지: uv sync --group data
-data = [
+[dependency-groups]
+# (dev는 그대로)
+data = [   # 데이터 파트 스크립트 실행용: uv sync --group data
   "lightgbm>=4.0,<5.0",
   "matplotlib>=3.8,<4.0",
   "scipy>=1.11,<2.0",
@@ -43,6 +44,9 @@ data = [
   "tqdm>=4.66,<5.0",
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"eda/*.py" = ["E402", "F811", "E501"]
+"preprocess/*.py" = ["E402", "F811", "E501"]
 [tool.hatch.build.targets.wheel]
 packages = ["src/icu_sews"]
 
