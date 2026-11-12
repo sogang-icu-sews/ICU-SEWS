@@ -14,6 +14,7 @@ eda/eda_icu.py                 # ICU-2: 데이터 병합, 환자 분리, Part 1 
 preprocess/icu_preprocess.py   # ICU-3: 1단계 정제, 2단계 특징 125+1개, 3단계 누수 검사·fold 0 기준선
 preprocess/icu_model_prep.py   # ICU-4: fold별 스케일링·대치 파라미터, LSTM 입력 배열
 models/train_logreg.py          # ICU-5: 로지스틱 회귀 5-fold CV, 보정, 경보 임계값, 결과 저장
+models/train_lstm.py            # ICU-6 : LSTM 적용 5-fold CV, 보정, 경보 임계값 (AUROC 0.776, Utility 0.282), 결과 저장
 src/sews_features.py            # 정제 + 24시간 창 특징 (학습용 계산 / API용 참조 계산)
 src/sews_preprocess.py          # fold별 스케일링·대치, LSTM 창 생성
 src/sews_eval.py                # 공용 평가: AUROC·AUPRC·조기 구간·환자 단위·Brier·ECE, PhysioNet 공식 Utility
@@ -66,6 +67,7 @@ Colab에서는 각 파일을 셀 단위로 실행하면 된다(첫 셀이 Drive�
 |---|---|---|---|---|
 | 로지스틱 회귀 (C=0.01, balanced) | 0.769 ± 0.008 | 0.064 ± 0.003 | 0.757 | Utility 0.273, Brier 0.0172 (Isotonic 보정) |
 | LightGBM 기준선 (fold 0, 튜닝 없음) | 0.799 | 0.073 | 0.792 | ICU-3 [3-5] 점검용 |
+| LSTM 5-fold CV, 보정, 경보 임계값 (AUROC 0.776, Utility 0.282) |
 
 ## 출처
 
