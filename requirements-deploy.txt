@@ -1,0 +1,7 @@
+# Minimal runtime dependencies for the FastAPI + Streamlit mock deployment.
+fastapi>=0.115,<1.0
+httpx>=0.27,<1.0
+pandas>=2.2,<3.0
+pydantic>=2.9,<3.0
+streamlit>=1.39,<2.0
+uvicorn[standard]>=0.30,<1.0
