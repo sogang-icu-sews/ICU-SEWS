@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: icu-sews-mock
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: SEWS_USE_MOCK_MODEL
+        value: "true"
+      - key: SEWS_API_URL
+        value: "http://127.0.0.1:8000"
