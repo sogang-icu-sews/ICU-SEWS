@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+__pycache__
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.streamlit
+.env
+.env.*
+data/raw
+data/interim
+data/processed
+artifacts
+mlruns
+*.py[cod]
