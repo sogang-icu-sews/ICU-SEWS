@@ -38,6 +38,27 @@
 
 ## 모델·평가 파일
 
+- [GRU 실험·최종 평가 보고서 (2026-11-12)](GRU_EXPERIMENT_REPORT_2026-11-12.md):
+  v1~v3 학습 과정, 보정·경보 비교, 최종 test 성능·95% 신뢰구간, 해석과 후속 과제.
+
+GRU Colab 학습 추가 파일(담당: 이택훈):
+
+- `notebooks/ICU_SEWS_GRU_Colab.ipynb`: Drive 연결, Python 3.10 GPU 환경, 입력 준비, fold 학습·재개.
+- `scripts/prepare_gru_colab.py`: 공식 ZIP에서 고정 환자 분할·전처리 기준으로 GRU 입력 생성.
+- `scripts/train_gru.py`, `src/icu_sews/models/train_gru.py`: 환자 fold 검증, 학습·체크포인트·OOF 저장.
+- `src/icu_sews/models/gru.py`: 가변 길이와 정적 정보를 지원하는 GRU.
+- `requirements-gru-colab.txt`: Colab 학습의 Python 3.10 의존성 버전.
+- `tests/test_gru_training.py`: 환자·시간 경계, padding, 재개 결과 일치 및 test 제외 검증.
+- `docs/GRU_COLAB.md`: 데이터 준비, 실행, 재개, 평가 범위 안내.
+- `notebooks/ICU_SEWS_GRU_Compare.ipynb`: v2/v3 보정·경보 비교용 독립 Colab 노트북.
+- `scripts/compare_gru.py`, `src/icu_sews/evaluation/compare_gru.py`: 원래 fold 안의 환자 역할 분리, 보정·임계값 평가.
+- `tests/test_gru_comparison.py`, `docs/GRU_COMPARISON.md`: 비교 절차 검증과 지표·평가 한계 정의.
+- `notebooks/ICU_SEWS_GRU_Final.ipynb`: v2 최종 학습, Platt, 단일 경보 임계값, 고정 test 평가.
+- `scripts/final_gru.py`, `src/icu_sews/models/final_gru.py`: 단계별 실행·재개·모델 고정·test 결과 저장.
+- `tests/test_final_gru.py`, `docs/GRU_FINAL.md`: 최종 환자 역할 분리, 전처리·재개·test 평가 검증과 실행 안내.
+- `notebooks/ICU_SEWS_GRU_Bootstrap.ipynb`, `scripts/bootstrap_gru.py`: 고정된 최종 예측으로 환자 단위 신뢰구간 계산.
+- `src/icu_sews/evaluation/bootstrap_gru.py`, `tests/test_gru_bootstrap.py`, `docs/GRU_BOOTSTRAP.md`: 환자 복원추출·가중 지표·검증·해석.
+
 로지스틱 회귀 기준선 추가 파일(담당: 이택훈):
 
 - `src/icu_sews/models/logistic.py`: 중앙값 대치·표준화·로지스틱 회귀 Pipeline.

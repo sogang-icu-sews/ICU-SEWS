@@ -33,3 +33,12 @@ wandb/
 output/
 tmp/
 *.log
+
+# GRU datasets and checkpoints (including generated data outside processed/)
+results/
+*.npy
+*.npz
+*.parquet
+*.pt
+*.pth
+training.zip
