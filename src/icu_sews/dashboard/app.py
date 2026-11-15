@@ -14,11 +14,89 @@ import streamlit as st
 
 from icu_sews.dashboard.api_client import get_health, predict
 
-st.set_page_config(page_title="ICU SEWS", page_icon="🏥", layout="wide")
-st.title("ICU 패혈증 조기 경보 시스템")
-st.caption(
-    "교육·연구용 프로토타입입니다. 실제 환자 진단이나 임상 의사결정에 사용하지 마세요. "
-    "현재 데모 환자와 입력값은 합성 데이터입니다."
+st.set_page_config(
+    page_title="ICU SEWS | Patient Monitoring",
+    page_icon="🏥",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+# Consistent visual system: calm navy, restrained status colors, generous spacing.
+st.markdown(
+    """
+    <style>
+      :root {
+        --sews-ink: #17243a;
+        --sews-muted: #64748b;
+        --sews-line: #e5eaf1;
+        --sews-surface: #ffffff;
+        --sews-canvas: #f5f7fb;
+      }
+      .stApp { background: var(--sews-canvas); color: var(--sews-ink); }
+      [data-testid="stHeader"] { background: rgba(245,247,251,.92); }
+      [data-testid="stMainBlockContainer"] {
+        max-width: 1500px; padding-top: 1.6rem; padding-bottom: 3rem;
+      }
+      h1, h2, h3 { color: var(--sews-ink); letter-spacing: -.025em; }
+      h2 { margin-top: 1.25rem; }
+      [data-testid="stMetric"] {
+        background: var(--sews-surface); border: 1px solid var(--sews-line);
+        border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(20,35,60,.035);
+      }
+      [data-testid="stMetricLabel"] p { color: var(--sews-muted); font-size: .82rem; }
+      [data-testid="stMetricValue"] { color: var(--sews-ink); font-weight: 700; }
+      [data-testid="stVerticalBlockBorderWrapper"] {
+        border-color: var(--sews-line); border-radius: 14px;
+      }
+      [data-testid="stFileUploader"] section {
+        background: #fff; border: 1px dashed #b9c6d8; border-radius: 12px;
+      }
+      .stButton > button, .stDownloadButton > button {
+        border-radius: 10px; min-height: 2.65rem; font-weight: 600;
+        border: 1px solid #d7dfeb;
+      }
+      .stButton > button[kind="primary"] {
+        background: #1d4ed8; border-color: #1d4ed8; color: #fff;
+      }
+      [data-testid="stTabs"] button { font-weight: 600; }
+      [data-testid="stDataFrame"], [data-testid="stTable"] {
+        border: 1px solid var(--sews-line); border-radius: 10px; overflow: hidden;
+      }
+      [data-testid="stSidebar"] {
+        background: #fff; border-right: 1px solid var(--sews-line);
+      }
+      .sews-hero {
+        background: linear-gradient(115deg, #14243d 0%, #203e68 72%, #28558a 100%);
+        border-radius: 18px; padding: 25px 30px; color: #fff; margin-bottom: 18px;
+        box-shadow: 0 8px 24px rgba(20,40,70,.12);
+      }
+      .sews-eyebrow { color: #b9cce5; font-size: .76rem; font-weight: 700;
+        letter-spacing: .13em; text-transform: uppercase; margin-bottom: 8px; }
+      .sews-title { color: #fff; font-size: 1.8rem; font-weight: 750;
+        letter-spacing: -.035em; line-height: 1.25; }
+      .sews-subtitle { color: #d5e0ef; font-size: .92rem; margin-top: 8px; }
+      .sews-note {
+        color: #64748b; font-size: .78rem; line-height: 1.5;
+        padding: 10px 13px; border-left: 3px solid #94a3b8;
+        background: #eef2f7; border-radius: 0 8px 8px 0; margin: 12px 0 18px;
+      }
+      @media (max-width: 700px) {
+        [data-testid="stMainBlockContainer"] { padding: 1rem .8rem 2rem; }
+        .sews-hero { padding: 20px; }
+        .sews-title { font-size: 1.4rem; }
+      }
+    </style>
+    <div class="sews-hero">
+      <div class="sews-eyebrow">ICU · Clinical Decision Support Prototype</div>
+      <div class="sews-title">패혈증 조기 경보 모니터링</div>
+      <div class="sews-subtitle">중환자 관찰 데이터와 예측 결과를 한 화면에서 확인합니다.</div>
+    </div>
+    <div class="sews-note">
+      교육·연구용 프로토타입입니다. 실제 환자 진단이나 임상 의사결정에 사용하지 마세요.
+      현재 데모 환자와 입력값은 합성 데이터입니다.
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
 try:
