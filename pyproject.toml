@@ -60,9 +60,16 @@ select = ["E", "F", "I", "B", "UP"]
 
 [tool.ruff.format]
 quote-style = "double"
+# Published data and frozen GRU runs hash these exact sources (LF-normalized).
+# Keep their released bytes; see docs/PUBLISHED_MODULE_COMPATIBILITY.md.
+exclude = ["data/src/sews_features.py", "data/src/sews_preprocess.py", "data/src/sews_eval.py"]
 
 [tool.ruff.lint.per-file-ignores]
 # 데이터 파트: 노트북 셀을 그대로 옮긴 스크립트. 셀마다 import가 있고(E402) 셀 단독 실행을 위해
 # 다시 import하며(F811), 한국어 해석 주석과 표가 길다(E501). 결과 재현을 위해 셀 코드는 유지한다.
 "data/eda/*.py" = ["E402", "F811", "E501"]
 "data/preprocess/*.py" = ["E402", "F811", "E501"]
+# Only line length is exempt; all other lint checks still apply to frozen modules.
+"data/src/sews_features.py" = ["E501"]
+"data/src/sews_preprocess.py" = ["E501"]
+"data/src/sews_eval.py" = ["E501"]
