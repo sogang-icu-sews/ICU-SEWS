@@ -102,7 +102,7 @@ except Exception as error:  # Show actionable API connection errors to the user.
 
 mock_mode = bool(health.get("mock_mode", True))
 if mock_mode:
-    st.warning("Mock 모델 사용 중: 위험도는 실제 모델 예측 결과가 아닙니다.")
+    st.info("개발용 모델 연결됨 · 예측 결과는 기능 확인용이며 임상 판단에 사용할 수 없습니다.")
 elif not health.get("model_loaded", False):
     st.warning("API가 실행 중이지만 모델 로드 상태가 확인되지 않았습니다.")
 else:
@@ -112,7 +112,7 @@ else:
 with st.expander("환자 데이터 파일 업로드", expanded=False):
     st.caption("PSV 또는 CSV 파일을 업로드해 API 예측을 요청할 수 있습니다.")
     st.divider()
-    st.header("실제 환자 데이터 업로드")
+    st.header("환자 데이터 업로드")
 
     uploaded_file = st.file_uploader(
         "PSV 또는 CSV 파일 선택",
