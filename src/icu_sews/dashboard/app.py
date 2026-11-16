@@ -242,8 +242,6 @@ with st.expander("환자 데이터 파일 업로드", expanded=False):
             st.error(f"파일을 읽는 중 오류가 발생했습니다: {error}")
 
 
-
-
 # A small synthetic roster gives the patient-list interaction a usable starting point.
 demo_patients = {
     "DEMO-001": {
