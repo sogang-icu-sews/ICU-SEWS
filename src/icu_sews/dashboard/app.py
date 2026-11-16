@@ -86,18 +86,12 @@ st.markdown(
         .sews-title { font-size: 1.4rem; }
       }
     </style>
-    <div class="sews-hero">
-      <div class="sews-eyebrow">ICU · Clinical Decision Support Prototype</div>
-      <div class="sews-title">패혈증 조기 경보 모니터링</div>
-      <div class="sews-subtitle">중환자 관찰 데이터와 예측 결과를 한 화면에서 확인합니다.</div>
-    </div>
-    <div class="sews-note">
-      교육·연구용 프로토타입입니다. 실제 환자 진단이나 임상 의사결정에 사용하지 마세요.
-      현재 데모 환자와 입력값은 합성 데이터입니다.
-    </div>
     """,
     unsafe_allow_html=True,
 )
+
+st.title("ICU SEWS")
+st.caption("중환자실 환자 상태 모니터링 · 패혈증 조기 경보 연구 시스템")
 
 try:
     health = get_health()
@@ -108,143 +102,144 @@ except Exception as error:  # Show actionable API connection errors to the user.
 
 mock_mode = bool(health.get("mock_mode", True))
 if mock_mode:
-    st.warning("Mock 모델 사용 중: 위험도는 실제 모델 예측 결과가 아닙니다.")
+    st.info("개발용 모델 연결됨 · 예측 결과는 기능 확인용이며 임상 판단에 사용할 수 없습니다.")
 elif not health.get("model_loaded", False):
     st.warning("API가 실행 중이지만 모델 로드 상태가 확인되지 않았습니다.")
 else:
     st.success("API 연결됨 · 모델 로드 상태 확인됨")
 
 
-# Actual patient data upload (PSV / CSV)
-st.divider()
-st.header("실제 환자 데이터 업로드")
+with st.expander("환자 데이터 파일 업로드", expanded=False):
+    st.caption("PSV 또는 CSV 파일을 업로드해 API 예측을 요청할 수 있습니다.")
+    st.divider()
+    st.header("환자 데이터 업로드")
 
-uploaded_file = st.file_uploader(
-    "PSV 또는 CSV 파일 선택",
-    type=["psv", "csv"],
-    help="환자 한 명의 시간별 관찰 데이터 파일을 업로드하세요.",
-)
+    uploaded_file = st.file_uploader(
+        "PSV 또는 CSV 파일 선택",
+        type=["psv", "csv"],
+        help="환자 한 명의 시간별 관찰 데이터 파일을 업로드하세요.",
+    )
 
-if uploaded_file is not None:
-    try:
-        if uploaded_file.name.lower().endswith(".psv"):
-            uploaded_df = pd.read_csv(uploaded_file, sep="|")
-        else:
-            uploaded_df = pd.read_csv(uploaded_file)
-
-        if uploaded_df.empty:
-            st.error("업로드한 파일에 데이터가 없습니다.")
-        elif "ICULOS" not in uploaded_df.columns:
-            st.error("필수 컬럼 ICULOS가 없습니다.")
-        else:
-            uploaded_df["ICULOS"] = pd.to_numeric(uploaded_df["ICULOS"], errors="coerce")
-
-            if uploaded_df["ICULOS"].isna().any():
-                st.error("ICULOS에 숫자가 아닌 값이 포함되어 있습니다.")
-            elif (uploaded_df["ICULOS"] < 1).any():
-                st.error("ICULOS는 1 이상의 값이어야 합니다.")
+    if uploaded_file is not None:
+        try:
+            if uploaded_file.name.lower().endswith(".psv"):
+                uploaded_df = pd.read_csv(uploaded_file, sep="|")
             else:
-                uploaded_df = uploaded_df.sort_values("ICULOS").reset_index(drop=True)
+                uploaded_df = pd.read_csv(uploaded_file)
 
-                if uploaded_df["ICULOS"].duplicated().any():
-                    st.error("중복된 ICULOS 값이 있습니다.")
+            if uploaded_df.empty:
+                st.error("업로드한 파일에 데이터가 없습니다.")
+            elif "ICULOS" not in uploaded_df.columns:
+                st.error("필수 컬럼 ICULOS가 없습니다.")
+            else:
+                uploaded_df["ICULOS"] = pd.to_numeric(uploaded_df["ICULOS"], errors="coerce")
+
+                if uploaded_df["ICULOS"].isna().any():
+                    st.error("ICULOS에 숫자가 아닌 값이 포함되어 있습니다.")
+                elif (uploaded_df["ICULOS"] < 1).any():
+                    st.error("ICULOS는 1 이상의 값이어야 합니다.")
                 else:
-                    patient_id = st.text_input(
-                        "환자 ID",
-                        value=uploaded_file.name.rsplit(".", 1)[0],
-                        key="uploaded_patient_id",
-                    )
+                    uploaded_df = uploaded_df.sort_values("ICULOS").reset_index(drop=True)
 
-                    st.success("파일을 정상적으로 읽었습니다.")
-                    st.write(f"전체 관찰 기록: {len(uploaded_df)}시간")
-                    st.write(f"전체 컬럼 수: {len(uploaded_df.columns)}개")
-
-                    # API contract allows at most 24 hourly observations.
-                    recent_24h = uploaded_df.tail(24).copy()
-
-                    # SepsisLabel is an outcome label, not a prediction input.
-                    preview_df = recent_24h.drop(columns=["SepsisLabel"], errors="ignore")
-
-                    st.subheader("최근 24시간 관찰 데이터")
-                    st.caption(
-                        "업로드한 환자의 최근 24시간 데이터를 API에 전달합니다. "
-                        "현재 API가 Mock 모드라면 결과는 실제 모델 예측이 아닙니다."
-                    )
-                    st.dataframe(
-                        preview_df,
-                        width="stretch",
-                        hide_index=True,
-                    )
-                    # Predict using the uploaded patient's observations.
-                    if st.button(
-                        "업로드 환자 위험도 예측 요청",
-                        type="primary",
-                        key="uploaded_predict_button",
-                    ):
-                        if not patient_id.strip():
-                            st.error("환자 ID를 입력하세요.")
-                        else:
-                            try:
-                                # Remove the outcome label to prevent label leakage.
-                                api_frame = recent_24h.drop(
-                                    columns=["SepsisLabel"],
-                                    errors="ignore",
-                                ).copy()
-
-                                # API requires integer ICULOS values.
-                                api_frame["ICULOS"] = api_frame["ICULOS"].astype(int)
-
-                                # Convert missing values to JSON null.
-                                records = (
-                                    api_frame.astype(object)
-                                    .where(pd.notna(api_frame), None)
-                                    .to_dict(orient="records")
-                                )
-
-                                payload = {
-                                    "patient_id": patient_id.strip(),
-                                    "observations": records,
-                                }
-
-                                with st.spinner("위험도를 평가하고 있습니다..."):
-                                    uploaded_result = predict(payload)
-
-                                st.session_state["uploaded_prediction"] = uploaded_result
-                                st.session_state["uploaded_prediction_id"] = patient_id.strip()
-
-                            except Exception as error:
-                                st.error(f"예측 요청 실패: {error}")
-
-                    # Display the uploaded patient's prediction separately.
-                    uploaded_result = st.session_state.get("uploaded_prediction")
-
-                    if (
-                        uploaded_result
-                        and st.session_state.get("uploaded_prediction_id") == patient_id.strip()
-                    ):
-                        st.subheader("업로드 환자 예측 결과")
-
-                        if uploaded_result.get("is_mock", False):
-                            st.warning("Mock 예측입니다. 실제 모델의 예측 결과가 아닙니다.")
-
-                        score = uploaded_result.get("risk_score")
-                        if score is not None:
-                            st.metric(
-                                "패혈증 위험 점수",
-                                f"{float(score):.1%}",
-                            )
-
-                        level = uploaded_result.get("risk_level", "unknown")
-                        st.write(f"위험 단계: {level}")
-
-                        st.caption(
-                            f"환자 ID: {uploaded_result.get('patient_id')}"
-                            f" · 모델 버전: "
-                            f"{uploaded_result.get('model_version', '미제공')}"
+                    if uploaded_df["ICULOS"].duplicated().any():
+                        st.error("중복된 ICULOS 값이 있습니다.")
+                    else:
+                        patient_id = st.text_input(
+                            "환자 ID",
+                            value=uploaded_file.name.rsplit(".", 1)[0],
+                            key="uploaded_patient_id",
                         )
 
-    except Exception as error:
-        st.error(f"파일을 읽는 중 오류가 발생했습니다: {error}")
+                        st.success("파일을 정상적으로 읽었습니다.")
+                        st.write(f"전체 관찰 기록: {len(uploaded_df)}시간")
+                        st.write(f"전체 컬럼 수: {len(uploaded_df.columns)}개")
+
+                        # API contract allows at most 24 hourly observations.
+                        recent_24h = uploaded_df.tail(24).copy()
+
+                        # SepsisLabel is an outcome label, not a prediction input.
+                        preview_df = recent_24h.drop(columns=["SepsisLabel"], errors="ignore")
+
+                        st.subheader("최근 24시간 관찰 데이터")
+                        st.caption(
+                            "업로드한 환자의 최근 24시간 데이터를 API에 전달합니다. "
+                            "현재 API가 Mock 모드라면 결과는 실제 모델 예측이 아닙니다."
+                        )
+                        st.dataframe(
+                            preview_df,
+                            width="stretch",
+                            hide_index=True,
+                        )
+                        # Predict using the uploaded patient's observations.
+                        if st.button(
+                            "업로드 환자 위험도 예측 요청",
+                            type="primary",
+                            key="uploaded_predict_button",
+                        ):
+                            if not patient_id.strip():
+                                st.error("환자 ID를 입력하세요.")
+                            else:
+                                try:
+                                    # Remove the outcome label to prevent label leakage.
+                                    api_frame = recent_24h.drop(
+                                        columns=["SepsisLabel"],
+                                        errors="ignore",
+                                    ).copy()
+
+                                    # API requires integer ICULOS values.
+                                    api_frame["ICULOS"] = api_frame["ICULOS"].astype(int)
+
+                                    # Convert missing values to JSON null.
+                                    records = (
+                                        api_frame.astype(object)
+                                        .where(pd.notna(api_frame), None)
+                                        .to_dict(orient="records")
+                                    )
+
+                                    payload = {
+                                        "patient_id": patient_id.strip(),
+                                        "observations": records,
+                                    }
+
+                                    with st.spinner("위험도를 평가하고 있습니다..."):
+                                        uploaded_result = predict(payload)
+
+                                    st.session_state["uploaded_prediction"] = uploaded_result
+                                    st.session_state["uploaded_prediction_id"] = patient_id.strip()
+
+                                except Exception as error:
+                                    st.error(f"예측 요청 실패: {error}")
+
+                        # Display the uploaded patient's prediction separately.
+                        uploaded_result = st.session_state.get("uploaded_prediction")
+
+                        if (
+                            uploaded_result
+                            and st.session_state.get("uploaded_prediction_id") == patient_id.strip()
+                        ):
+                            st.subheader("업로드 환자 예측 결과")
+
+                            if uploaded_result.get("is_mock", False):
+                                st.warning("Mock 예측입니다. 실제 모델의 예측 결과가 아닙니다.")
+
+                            score = uploaded_result.get("risk_score")
+                            if score is not None:
+                                st.metric(
+                                    "패혈증 위험 점수",
+                                    f"{float(score):.1%}",
+                                )
+
+                            level = uploaded_result.get("risk_level", "unknown")
+                            st.write(f"위험 단계: {level}")
+
+                            st.caption(
+                                f"환자 ID: {uploaded_result.get('patient_id')}"
+                                f" · 모델 버전: "
+                                f"{uploaded_result.get('model_version', '미제공')}"
+                            )
+
+        except Exception as error:
+            st.error(f"파일을 읽는 중 오류가 발생했습니다: {error}")
 
 
 # A small synthetic roster gives the patient-list interaction a usable starting point.
@@ -282,6 +277,19 @@ selected_id = st.selectbox(
 )
 patient = demo_patients[selected_id]
 
+st.subheader("환자 상태 요약")
+st.caption("아래 값은 선택한 데모 환자의 예시 관찰값입니다.")
+summary_cols = st.columns(4)
+summary_items = [
+    ("심박수", f"{patient['hr']} bpm"),
+    ("호흡수", f"{patient['resp']} /min"),
+    ("수축기혈압", f"{patient['sbp']} mmHg"),
+    ("평균동맥압", f"{patient['map']} mmHg"),
+]
+for col, (label, value) in zip(summary_cols, summary_items, strict=True):
+    with col:
+        st.metric(label, value)
+
 st.subheader("최근 24시간 관찰값")
 st.caption("슬라이더 값은 선택한 합성 환자의 24시간 동안 일정한 데모 값으로 사용됩니다.")
 left, middle, right = st.columns(3)
@@ -317,7 +325,7 @@ with chart_tab:
     st.line_chart(demo_frame.set_index("ICULOS")[["SBP", "MAP"]])
     st.line_chart(demo_frame.set_index("ICULOS")[["Lactate"]])
 with table_tab:
-    st.dataframe(demo_frame, use_container_width=True, hide_index=True)
+    st.dataframe(demo_frame, width="stretch", hide_index=True)
 
 st.subheader("위험도 평가")
 if st.button("선택 환자 위험도 요청", type="primary"):
@@ -363,7 +371,7 @@ if result and result_patient == selected_id:
     top_features = result.get("top_features") or []
     if top_features:
         feature_frame = pd.DataFrame(top_features)
-        st.dataframe(feature_frame, use_container_width=True, hide_index=True)
+        st.dataframe(feature_frame, width="stretch", hide_index=True)
         if {"feature", "shap_value"}.issubset(feature_frame.columns):
             st.bar_chart(feature_frame.set_index("feature")[["shap_value"]])
     else:
