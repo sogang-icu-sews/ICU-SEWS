@@ -160,16 +160,51 @@ with st.expander("환자 데이터 파일 업로드", expanded=False):
                         # SepsisLabel is an outcome label, not a prediction input.
                         preview_df = recent_24h.drop(columns=["SepsisLabel"], errors="ignore")
 
-                        st.subheader("최근 24시간 관찰 데이터")
+                        st.subheader("업로드 환자 관찰 데이터")
                         st.caption(
-                            "업로드한 환자의 최근 24시간 데이터를 API에 전달합니다. "
-                            "현재 API가 Mock 모드라면 결과는 실제 모델 예측이 아닙니다."
+                            "업로드한 실제 파일의 관찰값만 표시합니다. "
+                            "누락된 값은 임의로 채우지 않습니다."
                         )
-                        st.dataframe(
-                            preview_df,
-                            width="stretch",
-                            hide_index=True,
-                        )
+
+                        chart_columns = [
+                            column
+                            for column in (
+                                "HR",
+                                "O2Sat",
+                                "Temp",
+                                "SBP",
+                                "MAP",
+                                "DBP",
+                                "Resp",
+                                "EtCO2",
+                                "Lactate",
+                            )
+                            if column in preview_df.columns
+                            and pd.api.types.is_numeric_dtype(preview_df[column])
+                            and preview_df[column].notna().any()
+                        ]
+
+                        chart_tab, table_tab = st.tabs(["시계열 차트", "관찰값 표"])
+                        with chart_tab:
+                            if chart_columns:
+                                chart_df = preview_df.set_index("ICULOS")[chart_columns]
+                                st.line_chart(chart_df)
+                                st.caption(
+                                    "가로축은 ICU 입실 후 경과 시간(ICULOS)이며, "
+                                    "파일에 존재하는 생체 신호만 표시합니다."
+                                )
+                            else:
+                                st.info(
+                                    "차트로 표시할 수 있는 생체 신호가 없습니다. "
+                                    "HR, O2Sat, Temp, SBP, MAP, DBP, Resp, "
+                                    "EtCO2, Lactate 컬럼을 확인하세요."
+                                )
+                        with table_tab:
+                            st.dataframe(
+                                preview_df,
+                                width="stretch",
+                                hide_index=True,
+                            )
                         # Predict using the uploaded patient's observations.
                         if st.button(
                             "업로드 환자 위험도 예측 요청",
