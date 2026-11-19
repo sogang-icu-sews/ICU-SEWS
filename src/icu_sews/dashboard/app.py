@@ -252,7 +252,10 @@ with st.sidebar:
     )
 
 if demo_mode:
-    st.info("데모 모드가 활성화되었습니다. 표시되는 환자와 관찰값은 모두 합성 데이터이며 실제 환자 정보가 아닙니다.")
+    st.info(
+        "데모 모드가 활성화되었습니다. 표시되는 환자와 관찰값은 모두 합성 데이터이며 "
+        "실제 환자 정보가 아닙니다."
+    )
 
     # A small synthetic roster gives the patient-list interaction a usable starting point.
     demo_patients = {
