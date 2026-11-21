@@ -19,8 +19,13 @@ logger = logging.getLogger(__name__)
 class InvalidModelInputError(ValueError):
     """모델에 전달할 측정값이 올바르지 않을 때 발생하는 예외."""
 
-    def __init__(self, field: str, observation_index: int) -> None:
-        super().__init__(f"{field} must be a finite number or null")
+    def __init__(
+        self,
+        field: str,
+        observation_index: int,
+        message: str | None = None,
+    ) -> None:
+        super().__init__(message or f"{field} must be a finite number or null")
         self.field = field
         self.observation_index = observation_index
 
@@ -30,41 +35,53 @@ class PredictorService:
 
     def __init__(self) -> None:
         self.mock_mode = os.getenv("SEWS_USE_MOCK_MODEL", "false").lower() == "true"
+        self.model_type = os.getenv("SEWS_MODEL_TYPE", "logistic").strip().lower()
+
         self.loaded_model: LoadedLogisticModel | None = None
+        self.gru_predictor = None
         self.model_loaded = False
         self.prediction_ready = False
 
-        # Mock 모드는 실제 모델 파일 없이 사용할 수 있다.
         if self.mock_mode:
             self.model_loaded = True
             self.prediction_ready = True
             return
 
-        # 실제 모델 파일이 들어 있는 폴더 경로를 설정에서 읽는다.
-        model_dir = os.getenv("SEWS_MODEL_DIR", "").strip()
+        if self.model_type not in {"logistic", "gru"}:
+            logger.error("Unsupported model type: %s", self.model_type)
+            return
 
+        model_dir = os.getenv("SEWS_MODEL_DIR", "").strip()
         if not model_dir:
             logger.warning("Model loading skipped: SEWS_MODEL_DIR is not set")
             return
 
-        # 파일이 없거나 손상되어도 상태 확인용 API는 실행되도록 한다.
         try:
-            loaded_model = load_logistic_model(model_dir)
+            if self.model_type == "gru":
+                from icu_sews.api.gru_loader import load_gru_bundle
+                from icu_sews.api.gru_predictor import GruPredictor
+
+                bundle = load_gru_bundle(model_dir)
+                self.gru_predictor = GruPredictor(bundle)
+            else:
+                self.loaded_model = load_logistic_model(model_dir)
+
         except Exception:
-            logger.exception("Failed to load the logistic model")
+            logger.exception("Failed to load the %s model", self.model_type)
             return
 
-        self.loaded_model = loaded_model
         self.model_loaded = True
         self.prediction_ready = True
-
-        logger.info("Logistic model loaded and prediction is ready")
+        logger.info("%s model loaded and prediction is ready", self.model_type)
 
     def predict(self, request: PredictionRequest) -> PredictionResponse:
         """설정에 따라 실제 모델 또는 Mock으로 예측 결과를 반환한다."""
         if not self.mock_mode:
-            if not self.prediction_ready or self.loaded_model is None:
+            if not self.prediction_ready:
                 raise RuntimeError("Prediction unavailable: model is not loaded")
+
+            if self.model_type == "gru":
+                return self._predict_gru(request)
 
             return self._predict_real(request)
 
@@ -96,6 +113,43 @@ class PredictorService:
                 FeatureContribution(feature="SBP_demo", shap_value=0.0),
             ],
         )
+
+    def _predict_gru(self, request: PredictionRequest) -> PredictionResponse:
+        """환자 기록을 GRU에 전달하고 API 응답으로 변환한다."""
+        from icu_sews.api.gru_predictor import GruInputError
+
+        if self.gru_predictor is None:
+            raise RuntimeError("Prediction unavailable: model is not loaded")
+
+        observations = [
+            observation.model_dump(by_alias=True) for observation in request.observations
+        ]
+
+        try:
+            result = self.gru_predictor.predict(observations)
+
+            return PredictionResponse(
+                patient_id=request.patient_id,
+                risk_score=result["risk_score"],
+                risk_level="alert" if result["alarm"] else "below_threshold",
+                model_version=result["model_version"],
+                is_mock=False,
+                top_features=[],
+                alarm=result["alarm"],
+                threshold=result["threshold"],
+            )
+
+        except GruInputError as error:
+            index = error.observation_index
+            raise InvalidModelInputError(
+                field=error.field,
+                observation_index=0 if index is None else index,
+                message=str(error),
+            ) from error
+
+        except Exception as error:
+            logger.exception("GRU model prediction failed")
+            raise RuntimeError("Prediction unavailable: model prediction failed") from error
 
     def _predict_real(self, request: PredictionRequest) -> PredictionResponse:
         """마지막 관측값을 학습된 모델에 전달하고 예측 결과를 반환한다."""
