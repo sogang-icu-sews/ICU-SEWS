@@ -52,15 +52,11 @@ with TestClient(app) as client:
 
     assert result["patient_id"] == "TEST-GRU"
     assert result["is_mock"] is False
-    assert math.isclose(
-        result["risk_score"], direct["risk_score"], abs_tol=1e-7
-    )
+    assert math.isclose(result["risk_score"], direct["risk_score"], abs_tol=1e-7)
     assert result["alarm"] == direct["alarm"]
     assert result["threshold"] == direct["threshold"]
     assert result["model_version"] == direct["model_version"]
-    assert result["risk_level"] == (
-        "alert" if direct["alarm"] else "below_threshold"
-    )
+    assert result["risk_level"] == ("alert" if direct["alarm"] else "below_threshold")
     print("Prediction:", result)
     print("API/direct prediction match: OK")
 
@@ -72,9 +68,7 @@ with TestClient(app) as client:
         },
     )
     assert invalid.status_code == 422, invalid.text
-    assert invalid.json()["detail"][0]["loc"] == [
-        "body", "observations", 0, "HR"
-    ]
+    assert invalid.json()["detail"][0]["loc"] == ["body", "observations", 0, "HR"]
     print("Invalid HR rejected: OK")
 
     gap = client.post(
