@@ -53,6 +53,9 @@ class PredictionResponse(BaseModel):
     is_mock: bool
     top_features: list[FeatureContribution] = Field(default_factory=list)
 
+    alarm: bool | None = None
+    threshold: float | None = Field(default=None, ge=0.0, le=1.0)
+
 
 class HealthResponse(BaseModel):
     """Service readiness metadata."""
