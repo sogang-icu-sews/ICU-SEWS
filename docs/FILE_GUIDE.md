@@ -59,6 +59,13 @@ GRU Colab 학습 추가 파일(담당: 이택훈):
 - `notebooks/ICU_SEWS_GRU_Bootstrap.ipynb`, `scripts/bootstrap_gru.py`: 고정된 최종 예측으로 환자 단위 신뢰구간 계산.
 - `src/icu_sews/evaluation/bootstrap_gru.py`, `tests/test_gru_bootstrap.py`, `docs/GRU_BOOTSTRAP.md`: 환자 복원추출·가중 지표·검증·해석.
 
+LightGBM·LSTM·GRU 앙상블 추가 파일(담당: 정상민):
+
+- [앙상블 보고서 (2026-11-24)](ENSEMBLE_REPORT_2026-11-24.md): Optuna 탐색, dev 5-fold 비교, 고정 test 평가.
+- `notebooks/ICU-7_ensemble.ipynb`: 단일 모델 Optuna 탐색 → 5-fold OOF → 가중 앙상블 → 보정·임계값 → test (Colab T4).
+- `data/models/train_ensemble.py`: 위 노트북과 같은 계산을 하는 스크립트 (셀 단위 실행 가능).
+- `docs/ensemble/`: 5-fold·임계값 그룹·test 지표 CSV (환자별 데이터 없음).
+
 로지스틱 회귀 기준선 추가 파일(담당: 이택훈):
 
 - `src/icu_sews/models/logistic.py`: 중앙값 대치·표준화·로지스틱 회귀 Pipeline.

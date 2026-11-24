@@ -1,9 +1,9 @@
-# SEWS 데이터 파트: EDA · 전처리 · 특징 추출 · 로지스틱 회귀 · LSTM
+# SEWS 데이터 파트: EDA · 전처리 · 특징 추출 · 로지스틱 회귀 · LSTM · 앙상블
 
 ICU 패혈증 조기 경보 시스템(SEWS) 프로젝트(캡스톤디자인, 팀 포텐)에서 데이터 파트 코드를 모은 폴더다.
-담당 범위는 EDA, 환자 단위 분리, 결측 처리, 특징 추출, qSOFA·가용 SOFA 계산, 로지스틱 회귀 기준선 모델과 LSTM 모델이다.
+담당 범위는 EDA, 환자 단위 분리, 결측 처리, 특징 추출, qSOFA·가용 SOFA 계산, 로지스틱 회귀 기준선 모델, LSTM 모델, LightGBM·LSTM·GRU 가중 앙상블이다.
 
-원본은 Google Colab 노트북(ICU-2 ~ ICU-6)이다. `src/`와 `models/`는 타입 힌트·docstring 기준을 맞췄고,
+원본은 Google Colab 노트북(ICU-2 ~ ICU-7)이다. `src/`와 `models/`는 타입 힌트·docstring 기준을 맞췄고,
 `eda/`와 `preprocess/`는 노트북의 셀 순서와 코드를 그대로 옮긴 percent 형식(`# %%` 셀)이라서 VS Code·Jupyter에서
 셀 단위로 실행할 수도 있고 `python`으로 한 번에 실행할 수도 있다. 모든 `.py` 파일은 저장소 CI(ruff 검사·형식, pytest)를 통과한다.
 
@@ -15,6 +15,7 @@ preprocess/icu_preprocess.py    # ICU-3: 1단계 정제, 2단계 특징 125+1개
 preprocess/icu_model_prep.py    # ICU-4: fold별 스케일링·대치 파라미터, LSTM 입력 배열
 models/train_logreg.py          # ICU-5: 로지스틱 회귀 5-fold CV, 보정, 경보 임계값, 결과 저장
 models/train_lstm.py            # ICU-6: LSTM 5-fold CV (GPU 권장), 보정, 경보 임계값, 결과 저장
+models/train_ensemble.py        # ICU-7: LightGBM·LSTM·GRU Optuna 탐색 → 5-fold OOF → 가중 앙상블 → (선택) test
 src/sews_features.py            # 정제 + 24시간 창 특징 (학습용 계산 / API용 참조 계산)
 src/sews_preprocess.py          # fold별 스케일링·대치, LSTM 창 생성
 src/sews_eval.py                # 공용 평가: AUROC·AUPRC·조기 구간·환자 단위·Brier·ECE, PhysioNet 공식 Utility
@@ -43,7 +44,15 @@ python preprocess/icu_preprocess.py     # 약 5분.  features.parquet, eval_meta
 python preprocess/icu_model_prep.py     # 약 5분.  preprocess_params/, seq_values.npy
 python models/train_logreg.py --root $SEWS_ROOT   # 약 10~13분. results/logreg/
 python models/train_lstm.py --root $SEWS_ROOT     # T4 GPU 약 15~25분 (CPU는 수 시간). results/lstm/
+pip install optuna==5.1.0
+python models/train_ensemble.py                   # T4 GPU 약 4~6시간, 끊겨도 다시 실행하면 이어 감. SEWS_ENSEMBLE/
+SEWS_ENS_OPEN_TEST=1 python models/train_ensemble.py   # 앙상블 고정 뒤 test 한 번 평가
 ```
+
+`train_ensemble.py`는 `notebooks/ICU-7_ensemble.ipynb`와 같은 계산을 한다(같은 데이터로 두 방식의 결과가 일치함을 확인).
+환자 역할은 팀 최종 GRU의 `roles_for`를 그대로 써서 최종 모델·보정·임계값·test가 팀 GRU와 같은 set이다.
+탐색은 fold 0~2 학습 → fold 3 검증, 비교는 dev 5-fold OOF, 앙상블 가중치는 교차 적합(평가 fold는 가중치 선택에 쓰지 않음),
+최종 모델은 fold 4 모델(fold 0~3 학습), Platt 보정과 경보 임계값은 fold 4를 반으로 나눈 두 그룹에서 정한다.
 
 Colab에서는 각 파일을 셀 단위로 실행하면 된다(첫 셀이 Drive를 연결한다). 메모리 7GB 환경에서 전체 순서대로 실행해
 노트북과 같은 결과가 나오는 것을 확인했다(EDA 출력 숫자 일치, 기준선 AUROC 0.799, 로지스틱 회귀 AUROC 0.769).
@@ -69,13 +78,21 @@ Colab에서는 각 파일을 셀 단위로 실행하면 된다(첫 셀이 Drive�
 - **측정 패턴 특징**: 의료진이 의심할 때 내는 검사(Lactate, FiO2, 간 기능)에만 측정 횟수·마지막 측정 이후 시간을 만들었다.
 - **SOFA +2 라벨 미사용**: 부분 SOFA +2 이벤트 비율이 비패혈증 12.2% / 패혈증 15.3%로 구분되지 않아 공식 라벨을 쓴다.
 
-## 결과 (dev 5-fold OOF, 행 단위, test 미사용)
+## 결과 (dev 5-fold OOF, 행 단위)
 
 | 모델 | AUROC | AUPRC | AUROC (ICULOS ≤ 60) | 비고 |
 |---|---|---|---|---|
 | 로지스틱 회귀 (C=0.01, balanced) | 0.769 ± 0.008 | 0.064 ± 0.003 | 0.757 | Utility 0.273, Brier 0.0172 (Isotonic 보정) |
 | LightGBM 기준선 (fold 0, 튜닝 없음) | 0.799 | 0.073 | 0.792 | ICU-3 [3-5] 점검용 |
 | LSTM (h64, 1층, lr 3e-4) | 0.776 ± 0.015 | 0.071 | 0.762 | Utility 0.282, Brier 0.0173 (Platt 보정) |
+| LightGBM (Optuna, ICU-7) | 0.797 ± 0.006 | 0.079 | 0.789 | 특징 125개 |
+| LSTM (Optuna, ICU-7) | 0.787 ± 0.009 | 0.079 | 0.775 | ICU-6 구조 |
+| GRU (Optuna, ICU-7) | 0.790 ± 0.010 | 0.079 | 0.778 | 팀 GruSepsisModel |
+| 앙상블 (Optuna 가중치, ICU-7) | 0.804 ± 0.008 | 0.087 | 0.794 | 교차 적합 가중치. 같은 가중치 0.803 |
+
+ICU-7 앙상블의 고정 test 결과(6,051명): AUROC 0.794, AUPRC 0.081, Utility 0.175, 비패혈증 환자 오경보율 9.1%,
+발병 전 0~12시간 감지율 32.6% (팀 최종 GRU v2: 0.763, 0.070, 0.121, 9.3%, 27.6%).
+자세한 내용은 `docs/ENSEMBLE_REPORT_2026-11-24.md`에 있다.
 
 ## 검사 (저장소 CI)
 
