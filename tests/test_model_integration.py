@@ -55,6 +55,9 @@ def model_artifact(
     # 이 테스트 동안만 실제 모델 모드와 임시 경로를 적용한다.
     monkeypatch.setenv("SEWS_USE_MOCK_MODEL", "false")
     monkeypatch.setenv("SEWS_MODEL_DIR", str(tmp_path))
+    monkeypatch.setenv("SEWS_MODEL_TYPE", "logistic")
+    monkeypatch.setenv("SEWS_USE_MOCK_MODEL", "false")
+    monkeypatch.setenv("SEWS_MODEL_DIR", str(tmp_path))
 
     return pipeline
 

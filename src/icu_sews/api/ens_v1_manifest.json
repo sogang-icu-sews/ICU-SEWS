@@ -1,0 +1,9 @@
+{
+  "run": "ens_v1",
+  "frozen_sha256": "8e228d63c5d82dda729903c222b7e8fde3909b2a8253279792dffae4cb9a8ca0",
+  "preprocessing_files": {
+    "preprocess_config.json": "7a8dcf9a1c890801e71bf0946a7fae18b9299b6abefa3e63c82f1b997be1cb62",
+    "feature_registry.json": "d1087da1dc7d7a7bb077b623221ae99c7a34d9c257b4de7287dc5975e814448e",
+    "preprocess_params/fold4.json": "2f1c1f6d6e190fe7bd5ef313d9f216407439173a01d039bad001c08068e497f4"
+  }
+}

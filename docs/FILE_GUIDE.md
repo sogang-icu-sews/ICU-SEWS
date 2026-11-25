@@ -105,3 +105,14 @@ LightGBM·LSTM·GRU 앙상블 추가 파일(담당: 정상민):
 | `docs/ARCHITECTURE.md` | 모듈 경계와 누수 방지 원칙 | 최종 Mermaid 다이어그램 | 전원 |
 | `docs/API_CONTRACT.md` | 요청·응답 초안 | 백엔드/프론트 확정 계약 | 김진호·임경수 |
 | `docs/COLLABORATION.md` | 브랜치·리뷰·커밋 규칙 | 팀 합의 사항 반영 | 전원 |
+
+
+## LSTM / ens_v1 API integration (김진호)
+
+- `src/icu_sews/models/lstm.py`: inference architecture matching ICU-7.
+- `src/icu_sews/api/ensemble_loader.py`: frozen artifact/hash checks and CPU loading.
+- `src/icu_sews/api/ensemble_predictor.py`: published preprocessing, raw logit blend, Platt, threshold.
+- `src/icu_sews/api/ens_v1_manifest.json`: pinned model/preprocessing release hashes.
+- `src/icu_sews/api/service.py`: model selection and shared sequence response/error conversion.
+- `tests/test_ensemble_api.py`: actual-artifact inference and API regression checks.
+- `docs/LSTM_ENSEMBLE_API.md`: environment variables, inference contract and validation.
