@@ -39,6 +39,7 @@ class PredictorService:
 
         self.loaded_model: LoadedLogisticModel | None = None
         self.gru_predictor = None
+        self.ensemble_predictor = None
         self.model_loaded = False
         self.prediction_ready = False
 
@@ -47,7 +48,7 @@ class PredictorService:
             self.prediction_ready = True
             return
 
-        if self.model_type not in {"logistic", "gru"}:
+        if self.model_type not in {"logistic", "gru", "lstm", "ensemble", "ensemble_equal"}:
             logger.error("Unsupported model type: %s", self.model_type)
             return
 
@@ -57,7 +58,15 @@ class PredictorService:
             return
 
         try:
-            if self.model_type == "gru":
+            if self.model_type in {"lstm", "ensemble", "ensemble_equal"}:
+                from icu_sews.api.ensemble_loader import load_ensemble_bundle
+                from icu_sews.api.ensemble_predictor import EnsemblePredictor
+
+                bundle = load_ensemble_bundle(
+                    model_dir, os.getenv("SEWS_PREPROCESS_DIR", ""), self.model_type
+                )
+                self.ensemble_predictor = EnsemblePredictor(bundle)
+            elif self.model_type == "gru":
                 from icu_sews.api.gru_loader import load_gru_bundle
                 from icu_sews.api.gru_predictor import GruPredictor
 
@@ -82,6 +91,9 @@ class PredictorService:
 
             if self.model_type == "gru":
                 return self._predict_gru(request)
+
+            if self.model_type in {"lstm", "ensemble", "ensemble_equal"}:
+                return self._predict_sequence(request, self.ensemble_predictor)
 
             return self._predict_real(request)
 
@@ -116,9 +128,13 @@ class PredictorService:
 
     def _predict_gru(self, request: PredictionRequest) -> PredictionResponse:
         """환자 기록을 GRU에 전달하고 API 응답으로 변환한다."""
+        return self._predict_sequence(request, self.gru_predictor)
+
+    def _predict_sequence(self, request: PredictionRequest, predictor) -> PredictionResponse:
+        """GRU/LSTM/앙상블의 동일한 오류 및 응답 계약을 적용한다."""
         from icu_sews.api.gru_predictor import GruInputError
 
-        if self.gru_predictor is None:
+        if predictor is None:
             raise RuntimeError("Prediction unavailable: model is not loaded")
 
         observations = [
@@ -126,7 +142,7 @@ class PredictorService:
         ]
 
         try:
-            result = self.gru_predictor.predict(observations)
+            result = predictor.predict(observations)
 
             return PredictionResponse(
                 patient_id=request.patient_id,
@@ -148,7 +164,7 @@ class PredictorService:
             ) from error
 
         except Exception as error:
-            logger.exception("GRU model prediction failed")
+            logger.exception("%s model prediction failed", self.model_type)
             raise RuntimeError("Prediction unavailable: model prediction failed") from error
 
     def _predict_real(self, request: PredictionRequest) -> PredictionResponse:
